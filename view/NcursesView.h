@@ -7,8 +7,12 @@
 
 #include "IView.h"
 
-class NcursesView : IView{
+class NcursesView : public IView{
+public:
+    NcursesView();
+    virtual ~NcursesView();
 
+    virtual bool exitView();
 };
 
 

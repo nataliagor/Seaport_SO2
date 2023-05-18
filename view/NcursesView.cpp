@@ -3,3 +3,20 @@
 //
 
 #include "NcursesView.h"
+#include <ncurses.h>
+
+NcursesView::NcursesView() {
+    initscr();
+    printw("Hi");
+    refresh();
+    getch();
+}
+
+NcursesView::~NcursesView() {
+
+}
+
+bool NcursesView::exitView(){
+    endwin();
+    return true;
+}

@@ -7,6 +7,8 @@
 
 
 class IView {
+public:
+    virtual bool exitView() = 0;
 
 };
 

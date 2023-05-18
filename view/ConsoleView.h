@@ -6,9 +6,16 @@
 #define SEAPORT_SO2_CONSOLEVIEW_H
 
 #include "IView.h"
+#include <iostream>
 
-class ConsoleView : IView{
+class ConsoleView : public IView{
+public:
+    ConsoleView();
+    virtual ~ConsoleView();
 
+    virtual bool exitView();
+
+private:
 };
 
 
