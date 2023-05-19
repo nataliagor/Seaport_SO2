@@ -8,11 +8,6 @@
 #include "view/ConsoleView.cpp"
 #include "view/NcursesView.h"
 #include "view/NcursesView.cpp"
-#include "vehicles/Vehicle.h"
-#include "vehicles/Ship.h"
-#include "vehicles/Ship.cpp"
-#include "vehicles/Truck.h"
-#include "vehicles/Truck.cpp"
 
 
 

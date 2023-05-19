@@ -2,5 +2,5 @@
 Projekt z przedmiotu systemy operacyjne 2
 
 Uruchamianie:
-g++ main.cpp -o main -lncurses
+g++ main.cpp vehicles/Truck.cpp vehicles/Vehicle.cpp vehicles/Ship.cpp -o main -lncurses
 ./main

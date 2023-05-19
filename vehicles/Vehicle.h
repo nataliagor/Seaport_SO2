@@ -9,8 +9,7 @@
 class Vehicle {
 public:
     Vehicle();
-
-    virtual ~Vehicle();
+    ~Vehicle();
 
 };
 

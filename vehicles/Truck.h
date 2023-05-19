@@ -11,8 +11,7 @@
 class Truck : public Vehicle{
 public:
     Truck();
-
-    ~Truck() override;
+    ~Truck();
 
 };
 

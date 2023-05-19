@@ -11,8 +11,7 @@
 class Ship : public Vehicle{
 public:
     Ship();
-
-    ~Ship() override;
+    ~Ship();
 
 
 };
