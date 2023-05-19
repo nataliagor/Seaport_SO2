@@ -3,3 +3,7 @@
 //
 
 #include "Ship.h"
+
+Ship::Ship() : Vehicle() {}
+
+Ship::~Ship() {}

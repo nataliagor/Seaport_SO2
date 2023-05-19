@@ -3,3 +3,7 @@
 //
 
 #include "Truck.h"
+
+Truck::Truck() : Vehicle() {}
+
+Truck::~Truck() {}

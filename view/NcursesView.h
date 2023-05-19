@@ -12,7 +12,7 @@ public:
     NcursesView();
     virtual ~NcursesView();
 
-    virtual bool exitView();
+    bool exitView() override;
 };
 
 

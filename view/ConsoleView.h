@@ -13,7 +13,7 @@ public:
     ConsoleView();
     virtual ~ConsoleView();
 
-    virtual bool exitView();
+    bool exitView() override;
 
 private:
 };

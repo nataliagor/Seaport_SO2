@@ -5,8 +5,14 @@
 #ifndef SEAPORT_SO2_TRUCK_H
 #define SEAPORT_SO2_TRUCK_H
 
+#include "Vehicle.h"
 
-class Truck {
+
+class Truck : public Vehicle{
+public:
+    Truck();
+
+    ~Truck() override;
 
 };
 
