@@ -13,7 +13,7 @@ void Seaport::startWorking(){
 }
 
 bool Seaport::initializeView(){
-    view = new NcursesView();
+    view = new ConsoleView();
     return true;
 }
 

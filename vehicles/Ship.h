@@ -7,8 +7,11 @@
 
 #include "Vehicle.h"
 
+class Dock;  // Forward declaration
 
 class Ship : public Vehicle{
+    Dock* dock;
+
 public:
     Ship();
     ~Ship();

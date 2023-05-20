@@ -7,8 +7,11 @@
 
 #include "Vehicle.h"
 
+class TruckParkingArea;   // Forward declaration
 
 class Truck : public Vehicle{
+    TruckParkingArea* truckParkingArea;
+
 public:
     Truck();
     ~Truck();
