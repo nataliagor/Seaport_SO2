@@ -22,10 +22,12 @@ bool Ship::leaveSeaport(){
 }
 
 void Ship::setDock(Dock *dock) {
+    std::lock_guard<std::mutex> lock(dockMutex);
     Ship::dock = dock;
 }
 
-Dock* Ship::getDock() const {
+Dock* Ship::getDock(){
+    std::lock_guard<std::mutex> lock(dockMutex);
     return dock;
 }
 

@@ -21,6 +21,7 @@ public:
     virtual ~Dock();
     bool occupyDock(Ship *newShip);
     bool freeDock();
+    bool checkIfFree();
 };
 
 
