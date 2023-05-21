@@ -16,6 +16,11 @@ class Dock {
     Ship* ship;
     std::mutex mutex;
 
+public:
+    Dock(int id);
+    virtual ~Dock();
+    bool occupyDock(Ship *newShip);
+    bool freeDock();
 };
 
 

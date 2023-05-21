@@ -9,6 +9,9 @@
 class IView {
 public:
     virtual bool exitView() = 0;
+    virtual void newShipAppears(int shipId) = 0;
+    virtual void freeDock(int dockId) = 0;
+    virtual void occupyDock(int dockId, int shipId) = 0;
 
 };
 

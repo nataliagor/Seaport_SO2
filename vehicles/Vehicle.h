@@ -18,13 +18,16 @@ protected:
     int maxTimeInPort;
 
 public:
-    Vehicle();
+    Vehicle(int id, int capacityInLitres, int loadInLiters, int maxTimeInPort);
     ~Vehicle();
-    bool unload(int amount);
-    bool load(int amount);
     bool isEmpty();
     bool isLoaded();
     bool isFull() const;
+
+    int unload(int amount) ;
+    int load(int amount) ;
+    int getTimeInPort();
+    int getMaxTimeInPort();
 
 };
 

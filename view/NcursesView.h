@@ -5,9 +5,11 @@
 #ifndef SEAPORT_SO2_NCURSESVIEW_H
 #define SEAPORT_SO2_NCURSESVIEW_H
 
+#include <mutex>
 #include "IView.h"
 
 class NcursesView : public IView{
+    std::mutex mutex;
 public:
     NcursesView();
     virtual ~NcursesView();

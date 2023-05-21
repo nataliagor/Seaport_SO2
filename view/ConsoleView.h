@@ -7,13 +7,18 @@
 
 #include "IView.h"
 #include <iostream>
+#include <mutex>
 
 class ConsoleView : public IView{
+    std::mutex mutex;
 public:
     ConsoleView();
     virtual ~ConsoleView();
 
     bool exitView() override;
+    void newShipAppears(int shipId) override;
+    void freeDock(int dockId) override;
+    void occupyDock(int dockId, int shipId) override;
 
 private:
 };

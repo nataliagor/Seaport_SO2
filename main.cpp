@@ -12,7 +12,7 @@
 
 
 int main() {
-    Seaport* seaPost = new Seaport();
+    Seaport* seaPost = new Seaport(5);
     seaPost->startWorking();
     return 0;
 }

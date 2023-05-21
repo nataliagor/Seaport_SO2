@@ -13,11 +13,19 @@ class Truck;   // Forward declaration
 //constexpr int MAX_NUMBER_OF_TRUCKS = 3;
 
 class TruckParkingArea {
+
+private:
     int id;
     bool available;
     Truck* truck;
     //std::vector<Truck*> trucks;
     std::mutex mutex;
+
+public:
+    TruckParkingArea(int id);
+    virtual ~TruckParkingArea();
+    bool occupyParkingArea(Truck *newTruck);
+    bool freeParkingArea();
 
 };
 

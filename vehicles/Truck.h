@@ -10,11 +10,14 @@
 class TruckParkingArea;   // Forward declaration
 
 class Truck : public Vehicle{
-    TruckParkingArea* truckParkingArea;
+    TruckParkingArea *truckParkingArea;
 
 public:
-    Truck();
+    Truck(int id, int capacityInLitres, int loadInLiters, int maxTimeInPort);
     ~Truck();
+    bool leaveSeaport();
+    void setTruckParkingArea(TruckParkingArea *truckParkingArea);
+    TruckParkingArea *getTruckParkingArea() const;
 
 };
 

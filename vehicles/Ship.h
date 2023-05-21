@@ -13,10 +13,11 @@ class Ship : public Vehicle{
     Dock* dock;
 
 public:
-    Ship();
+    Ship(int id, int capacityInLitres, int loadInLiters, int maxTimeInPort);
     ~Ship();
-
-
+    bool leaveSeaport();
+    void setDock(Dock *dock);
+    Dock *getDock() const;
 };
 
 
