@@ -24,6 +24,8 @@ public:
     ~Vehicle();
     bool isEmpty();
     bool isLoaded();
+    bool isBeingLoaded();
+    bool isBeingUnloaded();
     bool isFull();
 
     int unload(int amount) ;
@@ -31,6 +33,8 @@ public:
     int getTimeInPort();
     int getMaxTimeInPort();
     int getTimeInPortLeft();
+
+    int getId();
 
 };
 

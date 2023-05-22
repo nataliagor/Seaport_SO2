@@ -21,6 +21,16 @@ bool Vehicle::isLoaded(){
     return (loadStatus == LoadStatus::LOADED);
 }
 
+bool Vehicle::isBeingLoaded(){
+    std::lock_guard<std::mutex> lock(loadStatusMutex);
+    return (loadStatus == LoadStatus::LOADING);
+}
+
+bool Vehicle::isBeingUnloaded(){
+    std::lock_guard<std::mutex> lock(loadStatusMutex);
+    return (loadStatus == LoadStatus::UNLOADING);
+}
+
 bool Vehicle::isFull(){
     return (loadInLiters == capacityInLitres);
 }
@@ -49,4 +59,8 @@ int Vehicle::getTimeInPort(){
 
 int Vehicle::getMaxTimeInPort(){
     return maxTimeInPort;
+}
+
+int Vehicle::getId(){
+    return id;
 }

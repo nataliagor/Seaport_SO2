@@ -27,6 +27,10 @@ public:
     bool occupyParkingArea(Truck *newTruck);
     bool freeParkingArea();
 
+    int getId();
+    bool isAvailable();
+    Truck *getTruck();
+
 };
 
 

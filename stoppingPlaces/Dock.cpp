@@ -32,9 +32,19 @@ bool Dock::freeDock(){
 }
 
 
-bool Dock::checkIfFree(){
+int Dock::getId(){
     std::lock_guard<std::mutex> lock(mutex);
-    return (ship == nullptr);
+    return id;
+}
+
+bool Dock::isAvailable(){
+    std::lock_guard<std::mutex> lock(mutex);
+    return available;
+}
+
+Ship *Dock::getShip(){
+    std::lock_guard<std::mutex> lock(mutex);
+    return ship;
 }
 
 

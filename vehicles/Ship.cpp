@@ -7,14 +7,14 @@
 
 Ship::Ship(int id, int capacityInLitres, int loadInLiters, int maxTimeInPort) : Vehicle(id, capacityInLitres, loadInLiters, maxTimeInPort) {
     dock = nullptr;
-    timeInPort = 0;     //tutaj zaczac odliczanie
+    timeInPort = 0;     //tutaj zaczac odliczanie czasu //TODO
 }
 
 Ship::~Ship() {}
 
 bool Ship::leaveSeaport(){
     if(dock != nullptr){
-        dock->freeDock();           //? czy tutaj dodac pytanie do aministrator i on zwalnia dock
+        dock->freeDock();
         dock = nullptr;
         return true;
     }

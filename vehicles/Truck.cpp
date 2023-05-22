@@ -7,23 +7,26 @@
 
 Truck::Truck(int id, int capacityInLitres, int loadInLiters, int maxTimeInPort) : Vehicle(id, capacityInLitres, loadInLiters, maxTimeInPort) {
     truckParkingArea = nullptr;
+    timeInPort = 0;     //tutaj zaczac odliczanie czasu //TODO
 }
 
 Truck::~Truck() {}
 
 bool Truck::leaveSeaport(){
     if(truckParkingArea != nullptr){
-        truckParkingArea->freeParkingArea();            //? czy tutaj dodac pytanie do aministrator i on zwalnia miejsce
+        truckParkingArea->freeParkingArea();
         truckParkingArea = nullptr;
         return true;
     }
     return false;
 }
 
-TruckParkingArea *Truck::getTruckParkingArea() const {
+TruckParkingArea *Truck::getTruckParkingArea(){
+    std::lock_guard<std::mutex> lock(parkingAreaMutex);
     return truckParkingArea;
 }
 
 void Truck::setTruckParkingArea(TruckParkingArea *truckParkingArea) {
+    std::lock_guard<std::mutex> lock(parkingAreaMutex);
     Truck::truckParkingArea = truckParkingArea;
 }

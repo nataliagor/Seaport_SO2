@@ -38,11 +38,14 @@ class Seaport {
     std::vector<std::thread> trucksThreads;
     std::thread adminThread;
 
-    std::mutex idMutex;
-    std::mutex adminMutex;
-    std::mutex countVehiclesMutex;
-    std::mutex docksMutex;
-    std::mutex truckParkingAreasMutex;
+    std::mutex shipIdMutex;
+    std::mutex truckIdMutex;
+    std::mutex randMutex;
+    std::mutex emptyShipsMutex;
+    std::mutex loadedShipsMutex;
+    std::mutex emptyTrucksMutex;
+    std::mutex loadedTrucksMutex;
+    std::mutex docksAndParkingAreasMutex;
 
     std::random_device rd;
     PortAdministrator* portAdministrator;
@@ -60,16 +63,26 @@ private:
     void administratorLife();
     void giveLeavePermissions();
     void giveDockPermissions();
+    bool checkIfEmptyShipIsNeeded(Dock* dock);
+    void dockShip(Dock* dock);
     void giveParkPermissions();
+    bool checkIfEmptyTruckIsNeeded(TruckParkingArea* truckParkingAreas);
+    void parkTruck(TruckParkingArea* truckParkingArea);
 
     void shipLife();
     Ship* newShipAppears();
     void enterPort(Ship* ship);
     void addShipToWaitingQueue(Ship *ship);
     void leavePort(Ship* ship);
-    bool reloadShip(Ship* ship);
+    bool unloadShip(Ship* ship);
 
-    void newTruckAppears();
+    void trucksLife();
+    Truck* newTruckAppears();
+    void enterPort(Truck* truck);
+    void addTruckToWaitingQueue(Truck* truck);
+    void leavePort(Truck* truck);
+    bool unloadTruck(Truck* truck);
+
 
 public:
     int getNumberOfEmptyTrucks();

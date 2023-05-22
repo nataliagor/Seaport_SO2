@@ -21,10 +21,27 @@ bool TruckParkingArea::occupyParkingArea(Truck *newTruck){
 }
 
 bool TruckParkingArea::freeParkingArea(){
+    std::lock_guard<std::mutex> lock(mutex);
     if(!available){
         available = true;
+        truck->setTruckParkingArea(nullptr);
         truck = nullptr;
         return true;
     }
     return false;
+}
+
+int TruckParkingArea::getId(){
+    std::lock_guard<std::mutex> lock(mutex);
+    return id;
+}
+
+bool TruckParkingArea::isAvailable(){
+    std::lock_guard<std::mutex> lock(mutex);
+    return available;
+}
+
+Truck *TruckParkingArea::getTruck(){
+    std::lock_guard<std::mutex> lock(mutex);
+    return truck;
 }

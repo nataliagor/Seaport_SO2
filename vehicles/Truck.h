@@ -11,13 +11,14 @@ class TruckParkingArea;   // Forward declaration
 
 class Truck : public Vehicle{
     TruckParkingArea *truckParkingArea;
+    std::mutex parkingAreaMutex;
 
 public:
     Truck(int id, int capacityInLitres, int loadInLiters, int maxTimeInPort);
     ~Truck();
     bool leaveSeaport();
     void setTruckParkingArea(TruckParkingArea *truckParkingArea);
-    TruckParkingArea *getTruckParkingArea() const;
+    TruckParkingArea *getTruckParkingArea();
 
 };
 

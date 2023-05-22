@@ -10,30 +10,45 @@
 #include "stoppingPlaces/TruckParkingArea.h"
 #include "vehicles/Ship.h"
 #include "vehicles/Truck.h"
-
+#include "view/IView.h"
 
 
 class PortAdministrator {
-    std::priority_queue<Ship*> emptyShipsToDockPriorityQueue;
+    std::priority_queue<Ship*> emptyShipsToDockPriorityQueue;                   //segragecja czasem //TODO
     std::priority_queue<Ship*> loadedShipsToDockPriorityQueue;
     std::priority_queue<Ship*> shipsToLeavePriorityQueue;                       //opuszczją tylko loaded
     std::mutex emptyShipsQueueMutex;
     std::mutex loadedShipsQueueMutex;
     std::mutex leavingShipsQueueMutex;
+
+    std::priority_queue<Truck*> emptyTrucksToParkPriorityQueue;
+    std::priority_queue<Truck*> loadedTrucksToParkPriorityQueue;
+    std::priority_queue<Truck*> trucksToLeavePriorityQueue;                       //opuszczją tylko loaded
+    std::mutex emptyTrucksQueueMutex;
+    std::mutex loadedTrucksQueueMutex;
+    std::mutex leavingTrucksQueueMutex;
+
+    IView& view;
+
 public:
-    PortAdministrator();
+    explicit PortAdministrator(IView &view);
     virtual ~PortAdministrator();
 
     void addToEmptyShipsToDockQueue(Ship* ship);
     void addToLoadedShipsToDockQueue(Ship* ship);
     void addToShipsToLeaveQueue(Ship* ship);
 
-    void givePermissionToLoadedToDock(Dock* dock);
-    void givePermissionToEmptyToDock(Dock* dock);
+    bool givePermissionToLoadedToDock(Dock* dock);
+    bool givePermissionToEmptyToDock(Dock* dock);
     int givePermissionsToLeaveDock(int numberOfLoadedShips);
 
-    TruckParkingArea getPermissionToPark(Truck* truck);
-    bool getPermissionToLeavePort(Truck* truck);
+    void addToEmptyTrucksToParkQueue(Truck* truck);
+    void addToLoadedTrucksToParkQueue(Truck* truck);
+    void addToTrucksToLeaveQueue(Truck* truck);
+
+    bool givePermissionToLoadedToPark(TruckParkingArea* truckParkingArea);
+    bool givePermissionToEmptyToPark(TruckParkingArea* truckParkingArea);
+    int givePermissionsToLeaveParking(int numberOfLoadedTrucks);
 
 };
 
