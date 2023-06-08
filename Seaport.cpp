@@ -16,11 +16,9 @@ Seaport::~Seaport() {}
 void Seaport::startWorking(){
     initializeView();
 
-    portAdministrator = new PortAdministrator(*view);
-    int doWhile2 = 3000;
+    portAdministrator = new PortAdministrator(*view);                   //administrator portu
     adminThread = std::thread([&](){
-        while(doWhile2 > 0) {
-            doWhile2--;
+        while(true) {
             administratorLife();
         }
     });
@@ -28,20 +26,18 @@ void Seaport::startWorking(){
     int doWhile = 30;
     while(doWhile > 0){
         doWhile--;
+        Sleep(getRandomNumb(0,3000));                  //statki
         shipsThreads.emplace_back([&](){                           //nowy watek dodawany do wektora shipsThreads
             shipLife();                                                     //kod wykonywany przez wątek
         });
-    }
 
-    int doWhile3 = 30;
-    while(doWhile3 > 0){
-        doWhile3--;
+        Sleep(getRandomNumb(0,1000));                //ciezarowki
         trucksThreads.emplace_back([&](){
             trucksLife();
         });
     }
 
-    adminThread.join();
+    adminThread.join();                                                     //laczenie wszystkich watkow
     for (auto& shipThread : shipsThreads) {
         if (shipThread.joinable()) {
             shipThread.join();
@@ -52,8 +48,10 @@ void Seaport::startWorking(){
             truckThread.join();
         }
     }
+
     exitView();
 }
+
 
 bool Seaport::initializeView(){
     view = new ConsoleView();
@@ -84,8 +82,7 @@ void Seaport::giveLeavePermissions(){
 }
 
 void Seaport::giveDockPermissions(){
-    std::lock_guard<std::mutex> lock(docksAndParkingAreasMutex);
-    for (auto &dock: docks) {
+    for (auto &dock: getDocks()) {
         if (dock->isAvailable()) {
             dockShip(dock);
         }
@@ -93,7 +90,7 @@ void Seaport::giveDockPermissions(){
 }
 
 bool Seaport::checkIfEmptyShipIsNeeded(Dock* dock){
-    TruckParkingArea* truckParkingArea = truckParkingAreas[dock->getId()];
+    TruckParkingArea* truckParkingArea = getTruckParkingAreaById(dock->getId());
     if(!truckParkingArea->isAvailable() && (truckParkingArea->getTruck()->isLoaded() || truckParkingArea->getTruck()->isBeingUnloaded())) {
         return true;
     }
@@ -113,8 +110,7 @@ void Seaport::dockShip(Dock* dock){
 }
 
 void Seaport::giveParkPermissions(){
-    std::lock_guard<std::mutex> lock(docksAndParkingAreasMutex);
-    for(auto& truckParking : truckParkingAreas){
+    for(auto& truckParking : getTruckParkingAreas()){
         if(truckParking->isAvailable()){
             parkTruck(truckParking);
         }
@@ -122,7 +118,7 @@ void Seaport::giveParkPermissions(){
 }
 
 bool Seaport::checkIfEmptyTruckIsNeeded(TruckParkingArea* truckParkingArea){
-    Dock* dock = docks[truckParkingArea->getId()];
+    Dock* dock = getDockById(truckParkingArea->getId());
     if(!dock->isAvailable() && (dock->getShip()->isLoaded() || dock->getShip()->isBeingUnloaded())) {
         return true;
     }
@@ -145,18 +141,19 @@ void Seaport::parkTruck(TruckParkingArea* truckParkingArea){
 void Seaport::shipLife(){
     Ship *ship = newShipAppears();
     enterPort(ship);
-    unloadShip(ship);
+    Sleep(1000);
+    //do{ <- bez tego, bo unload/upload tylko nowo wplyniete
+    //unloadShip(ship);
+    //}while(ship->isLoaded()) // port opuszczaja tylko zaladowane statki
     leavePort(ship);
-    // jeśli nie jest loaded to opusc port w przeciwnym razie nie //TODO
 }
 
 Ship* Seaport::newShipAppears(){
-    std::lock_guard<std::mutex> lock(shipIdMutex);
-    lastShipId++;
+    int shipId = getCurrentShipId();
     int capacityInLitres = getRandomNumb(0,6);
-    Ship *newShip = new Ship(lastShipId, capacityInLitres, getRandomNumb(0,capacityInLitres), getRandomNumb(2, 48));
+    Ship *newShip = new Ship(shipId, capacityInLitres,getRandomNumb(0,capacityInLitres), getRandomNumb(2, 48));
 
-    view->newShipAppears(lastShipId);
+    view->newShipAppears(shipId);
     return newShip;
 }
 
@@ -166,16 +163,37 @@ void Seaport::enterPort(Ship* ship){
 }
 
 bool Seaport::unloadShip(Ship* ship){
-    //rozladowywanie / zaladowywanie //TODO
-    //if loaded -> opusc port
-    //if empty -> nie
+    Truck *truck = getTruckParkingAreaById(ship->getDock()->getId())->getTruck();
+
+    if(ship->isEmpty() || ship->isBeingLoaded()){                                       // zaladowywanie
+        int shipSpaceLeft = ship->getCapacityInLitres() - ship->getLoadInLiters();
+        int truckLoadInLitters = truck->getLoadInLiters();
+        int amount = truckLoadInLitters >= shipSpaceLeft ? shipSpaceLeft : truckLoadInLitters;
+
+        ship->load(amount);
+        truck->unload(amount);
+        if(ship->isFull()){
+            setNumberOfEmptyShips(getNumberOfEmptyShips() - 1);
+            setNumberOfLoadedShips(getNumberOfLoadedShips() + 1);
+        }
+
+    }else{                                                                              //rozladowywanie
+        int truckSpaceLeft = truck->getCapacityInLitres() - truck->getLoadInLiters();
+        int shipLoadInLitters = ship->getLoadInLiters();
+        int amount =  shipLoadInLitters >= truckSpaceLeft ? truckSpaceLeft : shipLoadInLitters;
+
+        ship->unload(amount);
+        truck->load(amount);
+
+    }
     return true;
 }
+
+
 
 void Seaport::leavePort(Ship* ship){
     portAdministrator->addToShipsToLeaveQueue(ship);
     while(ship->getDock() != nullptr){}
-    //ship->leaveSeaport();
     delete ship;
 }
 
@@ -188,17 +206,17 @@ void Seaport::addShipToWaitingQueue(Ship *ship){
 void Seaport::trucksLife(){
     Truck *truck = newTruckAppears();
     enterPort(truck);
+    Sleep(1000);
     unloadTruck(truck);
     leavePort(truck);
 }
 
 Truck* Seaport::newTruckAppears(){
-    std::lock_guard<std::mutex> lock(truckIdMutex);
-    lastTruckId++;
+    int truckId = getCurrentTruckId();
     int capacityInLitres = getRandomNumb(0,6);
-    Truck *newTruck = new Truck(lastTruckId, capacityInLitres, getRandomNumb(0,capacityInLitres), getRandomNumb(2, 48));
+    Truck *newTruck = new Truck(truckId, capacityInLitres, getRandomNumb(0,capacityInLitres), getRandomNumb(2, 48));
 
-    view->newTruckAppears(lastTruckId);
+    view->newTruckAppears(truckId);
     return newTruck;
 }
 
@@ -214,7 +232,6 @@ void Seaport::addTruckToWaitingQueue(Truck* truck){
 void Seaport::leavePort(Truck* truck){
     portAdministrator->addToTrucksToLeaveQueue(truck);
     while(truck->getTruckParkingArea() != nullptr){}
-    //truck->leaveSeaport();
     delete truck;
 }
 
@@ -266,5 +283,41 @@ void Seaport::setNumberOfLoadedShips(int numberOfLoadedShips) {
     std::lock_guard<std::mutex> lock(loadedShipsMutex);
     Seaport::numberOfLoadedShips = numberOfLoadedShips;
 }
+
+int Seaport::getCurrentShipId(){
+    std::lock_guard<std::mutex> lock(lastShipIdMutex);
+    Seaport::lastShipId = ++lastShipId;
+    return lastShipId;
+}
+
+int Seaport::getCurrentTruckId(){
+    std::lock_guard<std::mutex> lock(lastTruckIdMutex);
+    Seaport::lastTruckId = ++lastTruckId;
+    return lastTruckId;
+}
+
+std::vector<Dock *> &Seaport::getDocks(){
+    std::lock_guard<std::mutex> lock(docksMutex);
+    return docks;
+}
+
+std::vector<TruckParkingArea *> &Seaport::getTruckParkingAreas(){
+    std::lock_guard<std::mutex> lock(parkingAreasMutex);
+    return truckParkingAreas;
+}
+
+Dock* Seaport::getDockById(int id){
+    std::lock_guard<std::mutex> lock(docksMutex);
+    return docks[id];
+}
+
+TruckParkingArea* Seaport::getTruckParkingAreaById(int id){
+    std::lock_guard<std::mutex> lock(parkingAreasMutex);
+    return truckParkingAreas[id];
+}
+
+
+
+
 
 

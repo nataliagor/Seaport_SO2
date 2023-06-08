@@ -10,9 +10,9 @@ TruckParkingArea::TruckParkingArea(int id) : id(id), available(true), truck(null
 TruckParkingArea::~TruckParkingArea() {}
 
 bool TruckParkingArea::occupyParkingArea(Truck *newTruck){
-    std::lock_guard<std::mutex> lock(mutex);
-    if(available){
-        available = false;
+    if(isAvailable()){
+        setAvailable(false);
+        std::lock_guard<std::mutex> lock(truckMutex);
         truck = newTruck;
         newTruck->setTruckParkingArea(this);
         return true;
@@ -21,9 +21,9 @@ bool TruckParkingArea::occupyParkingArea(Truck *newTruck){
 }
 
 bool TruckParkingArea::freeParkingArea(){
-    std::lock_guard<std::mutex> lock(mutex);
-    if(!available){
-        available = true;
+    if(!isAvailable()){
+        setAvailable(true);
+        std::lock_guard<std::mutex> lock(truckMutex);
         truck->setTruckParkingArea(nullptr);
         truck = nullptr;
         return true;
@@ -32,16 +32,21 @@ bool TruckParkingArea::freeParkingArea(){
 }
 
 int TruckParkingArea::getId(){
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::mutex> lock(idMutex);
     return id;
 }
 
 bool TruckParkingArea::isAvailable(){
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::mutex> lock(availableMutex);
     return available;
 }
 
 Truck *TruckParkingArea::getTruck(){
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::mutex> lock(truckMutex);
     return truck;
+}
+
+void TruckParkingArea::setAvailable(bool available) {
+    std::lock_guard<std::mutex> lock(availableMutex);
+    TruckParkingArea::available = available;
 }

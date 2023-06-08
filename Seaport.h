@@ -9,6 +9,7 @@
 #include <queue>
 #include <thread>
 #include <random>
+#include <windows.h>
 #include "view/IView.h"
 #include "view/ConsoleView.h"
 #include "view/NcursesView.h"
@@ -38,14 +39,15 @@ class Seaport {
     std::vector<std::thread> trucksThreads;
     std::thread adminThread;
 
-    std::mutex shipIdMutex;
-    std::mutex truckIdMutex;
+    std::mutex lastShipIdMutex;
+    std::mutex lastTruckIdMutex;
     std::mutex randMutex;
     std::mutex emptyShipsMutex;
     std::mutex loadedShipsMutex;
     std::mutex emptyTrucksMutex;
     std::mutex loadedTrucksMutex;
-    std::mutex docksAndParkingAreasMutex;
+    std::mutex docksMutex;
+    std::mutex parkingAreasMutex;
 
     std::random_device rd;
     PortAdministrator* portAdministrator;
@@ -84,7 +86,6 @@ private:
     bool unloadTruck(Truck* truck);
 
 
-public:
     int getNumberOfEmptyTrucks();
     void setNumberOfEmptyTrucks(int numberOfEmptyTrucks);
     int getNumberOfEmptyShips();
@@ -93,6 +94,13 @@ public:
     void setNumberOfLoadedTrucks(int numberOfLoadedTrucks);
     int getNumberOfLoadedShips();
     void setNumberOfLoadedShips(int numberOfLoadedShips);
+    int getCurrentShipId();
+    int getCurrentTruckId();
+
+    std::vector<Dock *> &getDocks();
+    std::vector<TruckParkingArea *> &getTruckParkingAreas();
+    Dock* getDockById(int id);
+    TruckParkingArea* getTruckParkingAreaById(int id);
 
 };
 

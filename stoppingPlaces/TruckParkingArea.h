@@ -19,7 +19,9 @@ private:
     bool available;
     Truck* truck;
     //std::vector<Truck*> trucks;
-    std::mutex mutex;
+    std::mutex idMutex;
+    std::mutex availableMutex;
+    std::mutex truckMutex;
 
 public:
     TruckParkingArea(int id);
@@ -30,6 +32,8 @@ public:
     int getId();
     bool isAvailable();
     Truck *getTruck();
+
+    void setAvailable(bool available);
 
 };
 

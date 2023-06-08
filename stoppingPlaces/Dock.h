@@ -14,7 +14,9 @@ class Dock {
     int id;
     bool available;
     Ship* ship;
-    std::mutex mutex;
+    std::mutex idMutex;
+    std::mutex availableMutex;
+    std::mutex shipMutex;
 
 public:
     Dock(int id);
@@ -25,6 +27,9 @@ public:
     int getId();
     bool isAvailable();
     Ship *getShip();
+
+private:
+    void setAvailable(bool available);
 };
 
 

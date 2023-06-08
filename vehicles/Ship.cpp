@@ -13,6 +13,7 @@ Ship::Ship(int id, int capacityInLitres, int loadInLiters, int maxTimeInPort) : 
 Ship::~Ship() {}
 
 bool Ship::leaveSeaport(){
+    std::lock_guard<std::mutex> lock(dockMutex);
     if(dock != nullptr){
         dock->freeDock();
         dock = nullptr;

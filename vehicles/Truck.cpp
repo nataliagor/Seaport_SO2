@@ -13,6 +13,7 @@ Truck::Truck(int id, int capacityInLitres, int loadInLiters, int maxTimeInPort) 
 Truck::~Truck() {}
 
 bool Truck::leaveSeaport(){
+    std::lock_guard<std::mutex> lock(parkingAreaMutex);
     if(truckParkingArea != nullptr){
         truckParkingArea->freeParkingArea();
         truckParkingArea = nullptr;
