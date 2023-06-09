@@ -140,20 +140,28 @@ void Seaport::parkTruck(TruckParkingArea* truckParkingArea){
 //-----------------------------------ship-----------------------------------
 void Seaport::shipLife(){
     Ship *ship = newShipAppears();
+    Sleep(1000);
+
     enterPort(ship);
     Sleep(1000);
-    //do{ <- bez tego, bo unload/upload tylko nowo wplyniete
-    //unloadShip(ship);
-    //}while(ship->isLoaded()) // port opuszczaja tylko zaladowane statki
+
+    bool success = reloadShip(ship);          //operacje wykonuje tylko nowo przybyly statek/cezarowka
+    Sleep(1000);
+
+    if(!success){
+        if(ship->isLoaded()) {while(ship->isEmpty()){}}
+        while(ship->isLoaded()){}
+    }
     leavePort(ship);
 }
 
 Ship* Seaport::newShipAppears(){
     int shipId = getCurrentShipId();
-    int capacityInLitres = getRandomNumb(0,6);
-    Ship *newShip = new Ship(shipId, capacityInLitres,getRandomNumb(0,capacityInLitres), getRandomNumb(2, 48));
+    int capacityInLitres = getRandomNumb(1,1);
+    int loadInLiters = getRandomNumb(0,capacityInLitres);
+    Ship *newShip = new Ship(shipId, capacityInLitres,loadInLiters, getRandomNumb(2, 48));
 
-    view->newShipAppears(shipId);
+    view->newShipAppears(shipId, capacityInLitres, loadInLiters);
     return newShip;
 }
 
@@ -162,38 +170,23 @@ void Seaport::enterPort(Ship* ship){
     while(ship->getDock() == nullptr){}
 }
 
-bool Seaport::unloadShip(Ship* ship){
+bool Seaport::reloadShip(Ship* ship){
+    std::lock_guard<std::mutex> lock(reloadingMutex);
     Truck *truck = getTruckParkingAreaById(ship->getDock()->getId())->getTruck();
+    if(truck == nullptr) return false;
 
     if(ship->isEmpty() || ship->isBeingLoaded()){                                       // zaladowywanie
-        int shipSpaceLeft = ship->getCapacityInLitres() - ship->getLoadInLiters();
-        int truckLoadInLitters = truck->getLoadInLiters();
-        int amount = truckLoadInLitters >= shipSpaceLeft ? shipSpaceLeft : truckLoadInLitters;
-
-        ship->load(amount);
-        truck->unload(amount);
-        if(ship->isFull()){
-            setNumberOfEmptyShips(getNumberOfEmptyShips() - 1);
-            setNumberOfLoadedShips(getNumberOfLoadedShips() + 1);
-        }
-
-    }else{                                                                              //rozladowywanie
-        int truckSpaceLeft = truck->getCapacityInLitres() - truck->getLoadInLiters();
-        int shipLoadInLitters = ship->getLoadInLiters();
-        int amount =  shipLoadInLitters >= truckSpaceLeft ? truckSpaceLeft : shipLoadInLitters;
-
-        ship->unload(amount);
-        truck->load(amount);
-
+        reloadTruckToShip(ship, truck);
+    }else{                                                                              // rozladowywanie
+        reloadShipToTruck(ship, truck);
     }
     return true;
 }
 
-
-
 void Seaport::leavePort(Ship* ship){
     portAdministrator->addToShipsToLeaveQueue(ship);
     while(ship->getDock() != nullptr){}
+    ship->leaveSeaport(); //nie trzba bo wszytsko powinno byc juz zwolnione u daministratoa, ale na wszelki wypadek
     delete ship;
 }
 
@@ -201,22 +194,63 @@ void Seaport::addShipToWaitingQueue(Ship *ship){
     (ship->isEmpty()) ? portAdministrator->addToEmptyShipsToDockQueue(ship) : portAdministrator->addToLoadedShipsToDockQueue(ship);
 }
 
+bool Seaport::reloadTruckToShip(Ship *ship, Truck* truck){
+    int shipSpaceLeft = ship->getCapacityInLitres() - ship->getLoadInLiters();
+    int truckLoadInLitters = truck->getLoadInLiters();
+    int amount = truckLoadInLitters >= shipSpaceLeft ? shipSpaceLeft : truckLoadInLitters;
+
+    ship->load(amount);
+    truck->unload(amount);
+
+    if(ship->isFull()){
+        setNumberOfEmptyShips(getNumberOfEmptyShips() - 1);
+        setNumberOfLoadedShips(getNumberOfLoadedShips() + 1);
+    }
+
+    view->reloadTruckToShip(ship->getId(), truck->getId(), amount);
+    return true;
+}
+
+bool Seaport::reloadShipToTruck(Ship *ship, Truck* truck){
+    int truckSpaceLeft = truck->getCapacityInLitres() - truck->getLoadInLiters();
+    int shipLoadInLitters = ship->getLoadInLiters();
+    int amount =  shipLoadInLitters >= truckSpaceLeft ? truckSpaceLeft : shipLoadInLitters;
+
+    truck->load(amount);
+    ship->unload(amount);
+
+    if(truck->isFull()){
+        setNumberOfEmptyShips(getNumberOfEmptyTrucks() - 1);
+        setNumberOfLoadedTrucks(getNumberOfLoadedTrucks() + 1);
+    }
+
+    view->reloadShipToTruck(ship->getId(), truck->getId(), amount);
+    return true;
+}
 
 //-----------------------------------truck-----------------------------------
 void Seaport::trucksLife(){
     Truck *truck = newTruckAppears();
+    Sleep(1000);
     enterPort(truck);
     Sleep(1000);
-    unloadTruck(truck);
+    bool success = reloadTruck(truck);
+    Sleep(1000);
+
+    if(!success){
+        if(truck->isLoaded()) {while(truck->isEmpty()){}}
+        while(truck->isLoaded()){}
+    }
     leavePort(truck);
 }
 
 Truck* Seaport::newTruckAppears(){
     int truckId = getCurrentTruckId();
-    int capacityInLitres = getRandomNumb(0,6);
-    Truck *newTruck = new Truck(truckId, capacityInLitres, getRandomNumb(0,capacityInLitres), getRandomNumb(2, 48));
+    int capacityInLitres = getRandomNumb(1,1);
+    int loadInLiters = getRandomNumb(0,capacityInLitres);
+    Truck *newTruck = new Truck(truckId, capacityInLitres, loadInLiters, getRandomNumb(2, 48));
 
-    view->newTruckAppears(truckId);
+    view->newTruckAppears(truckId, capacityInLitres, loadInLiters);
     return newTruck;
 }
 
@@ -229,17 +263,24 @@ void Seaport::addTruckToWaitingQueue(Truck* truck){
     (truck->isEmpty()) ? portAdministrator->addToEmptyTrucksToParkQueue(truck) : portAdministrator->addToLoadedTrucksToParkQueue(truck);
 }
 
+bool Seaport::reloadTruck(Truck* truck){
+    std::lock_guard<std::mutex> lock(reloadingMutex);
+    Ship *ship = getDockById(truck->getTruckParkingArea()->getId())->getShip();
+    if(ship == nullptr) return false;
+
+    if(truck->isEmpty() || truck->isBeingLoaded()){                                       // zaladowywanie
+        reloadShipToTruck(ship, truck);
+    }else{                                                                                //rozladowywanie
+        reloadTruckToShip(ship, truck);
+    }
+    return true;
+}
+
 void Seaport::leavePort(Truck* truck){
     portAdministrator->addToTrucksToLeaveQueue(truck);
     while(truck->getTruckParkingArea() != nullptr){}
+    truck->leaveSeaport(); //nie trzba bo wszytsko powinno byc juz zwolnione u daministratoa, ale na wszelki wypadek
     delete truck;
-}
-
-bool Seaport::unloadTruck(Truck* truck){
-    //rozladowywanie / zaladowywanie //TODO
-    //if loaded -> opusc port
-    //if empty -> nie
-    return true;
 }
 
 

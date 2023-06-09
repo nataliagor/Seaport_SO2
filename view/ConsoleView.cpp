@@ -20,9 +20,9 @@ void ConsoleView::test(std::string test){
     std::cout << "TEST: " << test << std::endl;
 }
 
-void ConsoleView::newShipAppears(int shipId){
+void ConsoleView::newShipAppears(int shipId, int capacityInLitres, int loadInLiters){
     std::lock_guard<std::mutex> lock(mutex);
-    std::cout << "Pojawil sie nowy statek o id  " << shipId << std::endl;
+    std::cout << "Statek " << shipId << " pojemnosc: " << capacityInLitres << " ladunek: " << loadInLiters <<std::endl;
 }
 
 void ConsoleView::freeDock(int dockId){
@@ -35,9 +35,9 @@ void ConsoleView::occupyDock(int dockId, int shipId){
     std::cout << "Miejsce do cumowania " << dockId << " zostalo zajete przez statek " <<  shipId << std::endl;
 }
 
-void ConsoleView::newTruckAppears(int truckId){
+void ConsoleView::newTruckAppears(int truckId, int capacityInLitres, int loadInLiters){
     std::lock_guard<std::mutex> lock(mutex);
-    std::cout << "Pojawila sie nowa ciezarowka o id  " << truckId << std::endl;
+    std::cout << "Ciezarowka " << truckId << " pojemnosc: " << capacityInLitres << " ladunek: " << loadInLiters << std::endl;
 }
 
 void ConsoleView::freeTruckParkingArea(int truckParkingAreaId){
@@ -48,5 +48,16 @@ void ConsoleView::freeTruckParkingArea(int truckParkingAreaId){
 void ConsoleView::occupyTruckParkingArea(int truckParkingAreaId, int truckId){
     std::lock_guard<std::mutex> lock(mutex);
     std::cout << "Miejsce parkingowe " << truckParkingAreaId << " zostalo zajete przez ciezarowke " <<  truckId << std::endl;
+}
+
+
+void ConsoleView::reloadTruckToShip(int shipId, int truckId, int amount){
+    std::lock_guard<std::mutex> lock(mutex);
+    std::cout << "Przeladowanie " << amount << " litrow z ciezarowki " << truckId << " do statku " <<  shipId << std::endl;
+}
+
+void ConsoleView::reloadShipToTruck(int shipId, int truckId, int amount){
+    std::lock_guard<std::mutex> lock(mutex);
+    std::cout << "Przeladowanie " << amount << " litrow z statku " << shipId << " do ciezarowki " <<  truckId << std::endl;
 }
 

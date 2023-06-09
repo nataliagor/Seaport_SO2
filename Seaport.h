@@ -10,6 +10,7 @@
 #include <thread>
 #include <random>
 #include <windows.h>
+#include <typeinfo>
 #include "view/IView.h"
 #include "view/ConsoleView.h"
 #include "view/NcursesView.h"
@@ -46,8 +47,9 @@ class Seaport {
     std::mutex loadedShipsMutex;
     std::mutex emptyTrucksMutex;
     std::mutex loadedTrucksMutex;
-    std::mutex docksMutex;
-    std::mutex parkingAreasMutex;
+    std::mutex docksMutex;                  //te dwa polaczyc
+    std::mutex parkingAreasMutex;           //jakby sie cos psulo
+    std::mutex reloadingMutex;
 
     std::random_device rd;
     PortAdministrator* portAdministrator;
@@ -76,14 +78,17 @@ private:
     void enterPort(Ship* ship);
     void addShipToWaitingQueue(Ship *ship);
     void leavePort(Ship* ship);
-    bool unloadShip(Ship* ship);
+    bool reloadShip(Ship* ship);
+
+    bool reloadTruckToShip(Ship *ship, Truck* truck);
+    bool reloadShipToTruck(Ship *ship, Truck* truck);
 
     void trucksLife();
     Truck* newTruckAppears();
     void enterPort(Truck* truck);
     void addTruckToWaitingQueue(Truck* truck);
     void leavePort(Truck* truck);
-    bool unloadTruck(Truck* truck);
+    bool reloadTruck(Truck* truck);
 
 
     int getNumberOfEmptyTrucks();

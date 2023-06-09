@@ -18,13 +18,16 @@ public:
     bool exitView() override;
     void test(std::string test) override;
 
-    void newShipAppears(int shipId) override;
+    void newShipAppears(int shipId, int capacityInLitres, int loadInLiters) override;
     void freeDock(int dockId) override;
     void occupyDock(int dockId, int shipId) override;
 
-    void newTruckAppears(int truckId) override;
+    void newTruckAppears(int truckId, int capacityInLitres, int loadInLiters) override;
     void freeTruckParkingArea(int truckParkingAreaId) override;
     void occupyTruckParkingArea(int truckParkingAreaId, int truckId) override;
+
+    void reloadTruckToShip(int shipId, int truckId, int amount);
+    void reloadShipToTruck(int shipId, int truckId, int amount);
 
 private:
 };
