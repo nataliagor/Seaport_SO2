@@ -20,7 +20,7 @@ bool Dock::occupyDock(Ship *newShip){
     return false;
 }
 
-bool Dock::freeDock(){;
+bool Dock::freeDock(){
     if(!isAvailable()){
         setAvailable(true);
         std::lock_guard<std::mutex> lock(shipMutex);

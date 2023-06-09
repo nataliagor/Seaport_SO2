@@ -24,7 +24,7 @@ private:
     std::mutex truckMutex;
 
 public:
-    TruckParkingArea(int id);
+    explicit TruckParkingArea(int id);
     virtual ~TruckParkingArea();
     bool occupyParkingArea(Truck *newTruck);
     bool freeParkingArea();

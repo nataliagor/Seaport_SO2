@@ -60,17 +60,15 @@ int Vehicle::getTimeInPort(){
 }
 
 int Vehicle::getMaxTimeInPort(){
-    //std::lock_guard<std::mutex> lock(maxTimeInPortMutex);
+    std::lock_guard<std::mutex> lock(maxTimeInPortMutex);
     return maxTimeInPort;
 }
 
-int Vehicle::getId(){
-    //std::lock_guard<std::mutex> lock(idMutex);
+int Vehicle::getId() const {
     return id;
 }
 
-int Vehicle::getCapacityInLitres(){
-    //std::lock_guard<std::mutex> lock(capacityInLitresMutex);
+int Vehicle::getCapacityInLitres() const{
     return capacityInLitres;
 }
 

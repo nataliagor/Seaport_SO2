@@ -18,9 +18,7 @@ protected:
     int timeInPort;
     int maxTimeInPort;
 
-    std::mutex idMutex;
     std::mutex loadStatusMutex;
-    std::mutex capacityInLitresMutex;
     std::mutex loadInLitersMutex;
     std::mutex timeInPortMutex;
     std::mutex maxTimeInPortMutex;
@@ -40,8 +38,8 @@ public:
     int getTimeInPort();
     int getMaxTimeInPort();
     int getTimeInPortLeft();
-    int getId();
-    int getCapacityInLitres();
+    int getId() const;
+    int getCapacityInLitres() const;
     int getLoadInLiters();
     LoadStatus getLoadStatus();
     void setLoadStatus(LoadStatus loadStatus);

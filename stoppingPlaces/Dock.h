@@ -19,7 +19,7 @@ class Dock {
     std::mutex shipMutex;
 
 public:
-    Dock(int id);
+    explicit Dock(int id);
     virtual ~Dock();
     bool occupyDock(Ship *newShip);
     bool freeDock();
