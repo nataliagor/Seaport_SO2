@@ -26,12 +26,12 @@ void Seaport::startWorking(){
     int doWhile = 30;
     while(doWhile > 0){
         doWhile--;
-        Sleep(getRandomNumb(0,3000));                  //statki
+        sleep(getRandomNumb(0,3));                          //statki
         shipsThreads.emplace_back([&](){                           //nowy watek dodawany do wektora shipsThreads
             shipLife();                                                     //kod wykonywany przez wątek
         });
 
-        Sleep(getRandomNumb(0,1000));                //ciezarowki
+        sleep(getRandomNumb(0,1));                          //ciezarowki
         trucksThreads.emplace_back([&](){
             trucksLife();
         });
@@ -54,7 +54,7 @@ void Seaport::startWorking(){
 
 
 bool Seaport::initializeView(){
-    view = new ConsoleView();
+    view = new NcursesView();
     return true;
 }
 
@@ -140,13 +140,13 @@ void Seaport::parkTruck(TruckParkingArea* truckParkingArea){
 //-----------------------------------ship-----------------------------------
 void Seaport::shipLife(){
     Ship *ship = newShipAppears();
-    Sleep(1000);
+    sleep(1);
 
     enterPort(ship);
-    Sleep(1000);
+    sleep(1);
 
     bool success = reloadShip(ship);          //operacje wykonuje tylko nowo przybyly statek/cezarowka
-    Sleep(1000);
+    sleep(1);
 
     if(!success){
         if(ship->isLoaded()) {while(ship->isEmpty()){}}
@@ -231,11 +231,11 @@ bool Seaport::reloadShipToTruck(Ship *ship, Truck* truck){
 //-----------------------------------truck-----------------------------------
 void Seaport::trucksLife(){
     Truck *truck = newTruckAppears();
-    Sleep(1000);
+    sleep(1);
     enterPort(truck);
-    Sleep(1000);
+    sleep(1);
     bool success = reloadTruck(truck);
-    Sleep(1000);
+    sleep(1);
 
     if(!success){
         if(truck->isLoaded()) {while(truck->isEmpty()){}}

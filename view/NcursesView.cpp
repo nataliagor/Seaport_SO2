@@ -3,13 +3,13 @@
 //
 
 #include "NcursesView.h"
-//#include <ncurses.h>
+#include <ncurses.h>
 
 NcursesView::NcursesView() {
-    //initscr();
-    //printw("Hi");
-    //refresh();
-    //getch();
+    initscr();
+    printw("Welcome in seaPort");
+    refresh();
+    getch();
 }
 
 NcursesView::~NcursesView() {
@@ -17,6 +17,42 @@ NcursesView::~NcursesView() {
 }
 
 bool NcursesView::exitView(){
-    //endwin();
+    endwin();
     return true;
+}
+
+void NcursesView::test(std::string test) {
+
+}
+
+void NcursesView::newShipAppears(int shipId, int capacityInLitres, int loadInLiters) {
+
+}
+
+void NcursesView::freeDock(int dockId){
+
+}
+
+void NcursesView::occupyDock(int dockId, int shipId) {
+
+}
+
+void NcursesView::newTruckAppears(int truckId, int capacityInLitres, int loadInLiters) {
+
+}
+
+void NcursesView::freeTruckParkingArea(int truckParkingAreaId) {
+
+}
+
+void NcursesView::occupyTruckParkingArea(int truckParkingAreaId, int truckId) {
+
+}
+
+void NcursesView::reloadTruckToShip(int shipId, int truckId, int amount) {
+
+}
+
+void NcursesView::reloadShipToTruck(int shipId, int truckId, int amount) {
+
 }

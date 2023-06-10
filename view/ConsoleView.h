@@ -26,8 +26,8 @@ public:
     void freeTruckParkingArea(int truckParkingAreaId) override;
     void occupyTruckParkingArea(int truckParkingAreaId, int truckId) override;
 
-    void reloadTruckToShip(int shipId, int truckId, int amount);
-    void reloadShipToTruck(int shipId, int truckId, int amount);
+    void reloadTruckToShip(int shipId, int truckId, int amount) override;
+    void reloadShipToTruck(int shipId, int truckId, int amount) override;
 
 private:
 };
