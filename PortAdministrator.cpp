@@ -29,7 +29,7 @@ bool PortAdministrator::givePermissionToLoadedToDock(Dock* dock){
         Ship* ship = loadedShipsToDockPriorityQueue.top();
         dock->occupyDock(ship);
         loadedShipsToDockPriorityQueue.pop();
-        view.occupyDock(dock->getId(), ship->getId());
+        view.occupyDock(dock->getId(), ship->getId(), ship->getCapacityInLitres(), ship->getLoadInLiters());
     }else return false;
     return true;
 }
@@ -40,7 +40,7 @@ bool PortAdministrator::givePermissionToEmptyToDock(Dock* dock){
         Ship* ship = emptyShipsToDockPriorityQueue.top();
         dock->occupyDock(ship);
         emptyShipsToDockPriorityQueue.pop();
-        view.occupyDock(dock->getId(), ship->getId());
+        view.occupyDock(dock->getId(), ship->getId(), ship->getCapacityInLitres(), ship->getLoadInLiters());
     }else return false;
     return true;
 }
@@ -80,7 +80,7 @@ bool PortAdministrator::givePermissionToLoadedToPark(TruckParkingArea* truckPark
         Truck* truck = loadedTrucksToParkPriorityQueue.top();
                 truckParkingArea->occupyParkingArea(truck);
         loadedTrucksToParkPriorityQueue.pop();
-        view.occupyTruckParkingArea(truckParkingArea->getId(), truck->getId());
+        view.occupyTruckParkingArea(truckParkingArea->getId(), truck->getId(), truck->getCapacityInLitres(), truck->getLoadInLiters());
     }else return false;
     return true;
 }
@@ -91,7 +91,7 @@ bool PortAdministrator::givePermissionToEmptyToPark(TruckParkingArea* truckParki
         Truck* truck = emptyTrucksToParkPriorityQueue.top();
         truckParkingArea->occupyParkingArea(truck);
         emptyTrucksToParkPriorityQueue.pop();
-        view.occupyTruckParkingArea(truckParkingArea->getId(), truck->getId());
+        view.occupyTruckParkingArea(truckParkingArea->getId(), truck->getId(), truck->getCapacityInLitres(), truck->getLoadInLiters());
     }else return false;
     return true;
 }

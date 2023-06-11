@@ -2,7 +2,6 @@
 #include "Seaport.h"
 
 
-
 int main() {
     Seaport* seaPost = new Seaport(5);
     seaPost->startWorking();
