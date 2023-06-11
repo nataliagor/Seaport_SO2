@@ -21,8 +21,8 @@ public:
     virtual void freeTruckParkingArea(int TruckParkingAreaId) = 0;
     virtual void occupyTruckParkingArea(int truckParkingAreaId, int truckId, int capacityInLitres, int loadInLiters) = 0;
 
-    virtual void reloadTruckToShip(int shipId, int truckId, int amount) = 0;
-    virtual void reloadShipToTruck(int shipId, int truckId, int amount) = 0;
+    virtual void reloadTruckToShip(int dockId, int shipId, int truckId, int amount, int truckLoadInLiters, int shipLoadInLiters) = 0;
+    virtual void reloadShipToTruck(int dockId, int shipId, int truckId, int amount, int truckLoadInLiters, int shipLoadInLiters) = 0;
 
 };
 

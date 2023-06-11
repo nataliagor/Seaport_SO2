@@ -207,7 +207,7 @@ bool Seaport::reloadTruckToShip(Ship *ship, Truck* truck){
         setNumberOfLoadedShips(getNumberOfLoadedShips() + 1);
     }
 
-    view->reloadTruckToShip(ship->getId(), truck->getId(), amount);
+    view->reloadTruckToShip(ship->getDock()->getId(), ship->getId(), truck->getId(), amount, truck->getLoadInLiters(), ship->getLoadInLiters());
     return true;
 }
 
@@ -224,7 +224,7 @@ bool Seaport::reloadShipToTruck(Ship *ship, Truck* truck){
         setNumberOfLoadedTrucks(getNumberOfLoadedTrucks() + 1);
     }
 
-    view->reloadShipToTruck(ship->getId(), truck->getId(), amount);
+    view->reloadShipToTruck(ship->getDock()->getId(), ship->getId(), truck->getId(), amount, truck->getLoadInLiters(), ship->getLoadInLiters());
     return true;
 }
 

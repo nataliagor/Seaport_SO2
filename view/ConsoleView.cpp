@@ -51,12 +51,12 @@ void ConsoleView::occupyTruckParkingArea(int truckParkingAreaId, int truckId, in
 }
 
 
-void ConsoleView::reloadTruckToShip(int shipId, int truckId, int amount){
+void ConsoleView::reloadTruckToShip(int dockId, int shipId, int truckId, int amount, int truckLoadInLiters, int shipLoadInLiters){
     std::lock_guard<std::mutex> lock(mutex);
     std::cout << "Przeladowanie " << amount << " litrow z ciezarowki " << truckId << " do statku " <<  shipId << std::endl;
 }
 
-void ConsoleView::reloadShipToTruck(int shipId, int truckId, int amount){
+void ConsoleView::reloadShipToTruck(int dockId, int shipId, int truckId, int amount, int truckLoadInLiters, int shipLoadInLiters){
     std::lock_guard<std::mutex> lock(mutex);
     std::cout << "Przeladowanie " << amount << " litrow z statku " << shipId << " do ciezarowki " <<  truckId << std::endl;
 }

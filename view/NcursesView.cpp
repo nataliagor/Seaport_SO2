@@ -113,7 +113,7 @@ void NcursesView::drawDockAndParkingAreas(int headlineSpace, int docksXPosition,
 
 void NcursesView::drawSquares(int startXPosition, int headlineSpace, bool textOnTheRight){
     for(int i = 0; i < numberOfDocks ; i++){
-        move(i+1 + headlineSpace + 5*i + 1, startXPosition - 3);
+        move(i+1 + headlineSpace + 5*i, startXPosition - 3);
         printw("%d", i);
         drawSquare(i + headlineSpace +5*i, startXPosition);  // i + naglowek + (liczba lini kwadratu i przerwa) * i
 
@@ -187,6 +187,8 @@ void NcursesView::freeDock(int dockId){
     mvprintw(5 + yChange - 1, 47 + 6, "  ");
     mvprintw(5 + yChange - 1, 47 + 16, "  ");
 
+    mvprintw(5 + yChange, 17, "       ");
+
     move(2 + lastPanelInfoPos, 95);                //panel info firstY = 0 + 2, firstX = 95
     printw("Miejsce do cumowania %d zostalo zwolnione                    ", dockId);
 
@@ -209,7 +211,7 @@ void NcursesView::occupyDock(int dockId, int shipId, int capacityInLitres, int l
     printw("%d", loadInLiters);
 
     move(2 + lastPanelInfoPos, 95);                //panel info firstY = 0 + 2, firstX = 95
-    printw("Miejsce do cumowania %d zostalo zajete przez statek %d", dockId, shipId);
+    printw("Miejsce do cumowania %d zostalo zajete przez statek %d      ", dockId, shipId);
 
     lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
     refresh();
@@ -243,8 +245,10 @@ void NcursesView::freeTruckParkingArea(int truckParkingAreaId) {
     mvprintw(5 + yChange, 47 + 6, "  ");
     mvprintw(5 + yChange, 47 + 16, "  ");
 
+    mvprintw(5 + yChange, 17, "       ");
+
     move(2 + lastPanelInfoPos, 95);                //panel info firstY = 0 + 2, firstX = 95
-    printw("Miejsce prakingowe %d zostalo zwolnione                 ", truckParkingAreaId);
+    printw("Miejsce prakingowe %d zostalo zwolnione                   ", truckParkingAreaId);
 
     lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
     refresh();
@@ -265,20 +269,47 @@ void NcursesView::occupyTruckParkingArea(int truckParkingAreaId, int truckId, in
     printw("%d", loadInLiters);
 
     move(2 + lastPanelInfoPos, 95);                //panel info firstY = 0 + 2, firstX = 95
-    printw("Miejsce prakingowe %d zostalo zajete przez ciezarowke %d", truckParkingAreaId, truckId);
+    printw("Miejsce prakingowe %d zostalo zajete przez ciezarowke %d      ", truckParkingAreaId, truckId);
 
     lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
     refresh();
 }
 
-void NcursesView::reloadTruckToShip(int shipId, int truckId, int amount) {
+void NcursesView::reloadTruckToShip(int dockId, int shipId, int truckId, int amount, int truckLoadInLiters, int shipLoadInLiters) {
     std::lock_guard<std::mutex> lock(mutex);
+    int yChange = dockId + 5*dockId + 2;
+
+    move(5 + yChange + 1, 17);
+    printw("<--%d--", amount);
+
+    move(5 + yChange, 47 + 16);
+    printw("%d", truckLoadInLiters);
+    move(5 + yChange - 1, 47 + 16);
+    printw("%d", shipLoadInLiters);
+
+    move(2 + lastPanelInfoPos, 95);                             //panel info firstY = 0 + 2, firstX = 95
+    printw("Przeladowanie %d l ladunku z ciezarowki %d, do statku %d     ", amount, truckId, shipId);
+    lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
 
     refresh();
 }
 
-void NcursesView::reloadShipToTruck(int shipId, int truckId, int amount) {
+void NcursesView::reloadShipToTruck(int dockId, int shipId, int truckId, int amount, int truckLoadInLiters, int shipLoadInLiters) {
     std::lock_guard<std::mutex> lock(mutex);
+    int yChange = dockId + 5*dockId + 2;
+
+    move(5 + yChange + 1, 17);
+    printw("--%d-->", amount);
+
+    move(5 + yChange, 47 + 16);
+    printw("%d", truckLoadInLiters);
+    move(5 + yChange - 1, 47 + 16);
+    printw("%d", shipLoadInLiters);
+
+
+    move(2 + lastPanelInfoPos, 95);                           //panel info firstY = 0 + 2, firstX = 95
+    printw("Przeladowanie %d l ladunku z statku %d, do ciezarowki %d     ", amount, shipId, truckId);
+    lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
 
     refresh();
 }
