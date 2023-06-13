@@ -5,7 +5,8 @@
 #include "Vehicle.h"
 
 Vehicle::Vehicle(int id, int capacityInLitres, int loadInLiters, int maxTimeInPort) : id(id), capacityInLitres(capacityInLitres),
-                                                                                      loadInLiters(loadInLiters), timeInPort(0), maxTimeInPort(maxTimeInPort){
+                                                                                      loadInLiters(loadInLiters), timeInPort(0),
+                                                                                      maxTimeInPort(maxTimeInPort), statusChanged(false){
     std::lock_guard<std::mutex> lock(loadStatusMutex);
     loadStatus = loadInLiters == 0 ? LoadStatus::EMPTY : LoadStatus::LOADED;
 }
@@ -40,8 +41,8 @@ int Vehicle::unload(int amount){
     if(getLoadInLiters() < amount) return -1;
     setLoadInLiters(getLoadInLiters() - amount);
 
-    std::lock_guard<std::mutex> lock(loadStatusMutex);
-    loadStatus = getLoadInLiters() > 0 ? LoadStatus::UNLOADING : LoadStatus::EMPTY;
+    setLoadStatus(getLoadInLiters() > 0 ? LoadStatus::UNLOADING : LoadStatus::EMPTY);
+    if (getLoadStatus() == LoadStatus::EMPTY) setStatusChanged(true);
     return getLoadInLiters();
 }
 
@@ -49,8 +50,8 @@ int Vehicle::load(int amount){
     if(getLoadInLiters() + amount > getCapacityInLitres()) return -1;
     setLoadInLiters(getLoadInLiters() + amount);
 
-    std::lock_guard<std::mutex> lock(loadStatusMutex);
-    loadStatus = getLoadInLiters() < getCapacityInLitres() ? LoadStatus::LOADING : LoadStatus::LOADED;
+    setLoadStatus(getLoadInLiters() < getCapacityInLitres() ? LoadStatus::LOADING : LoadStatus::LOADED);
+    if (getLoadStatus() == LoadStatus::LOADED) setStatusChanged(true);
     return getCapacityInLitres() - getLoadInLiters();
 }
 
@@ -81,3 +82,26 @@ void Vehicle::setLoadInLiters(int loadInLiters) {
     std::lock_guard<std::mutex> lock(loadInLitersMutex);
     Vehicle::loadInLiters = loadInLiters;
 }
+
+bool Vehicle::isStatusChanged() {
+    std::lock_guard<std::mutex> lock(statusChangedMutex);
+    return statusChanged;
+}
+
+void Vehicle::setStatusChanged(bool statusChanged) {
+    std::lock_guard<std::mutex> lock(statusChangedMutex);
+    Vehicle::statusChanged = statusChanged;
+}
+
+LoadStatus Vehicle::getLoadStatus(){
+    std::lock_guard<std::mutex> lock(loadStatusMutex);
+    return loadStatus;
+}
+
+void Vehicle::setLoadStatus(LoadStatus loadStatus) {
+    std::lock_guard<std::mutex> lock(loadStatusMutex);
+    Vehicle::loadStatus = loadStatus;
+}
+
+
+

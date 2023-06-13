@@ -17,11 +17,13 @@ protected:
     LoadStatus loadStatus;
     int timeInPort;
     int maxTimeInPort;
+    bool statusChanged;
 
     std::mutex loadStatusMutex;
     std::mutex loadInLitersMutex;
     std::mutex timeInPortMutex;
     std::mutex maxTimeInPortMutex;
+    std::mutex statusChangedMutex;
 
 public:
     Vehicle(int id, int capacityInLitres, int loadInLiters, int maxTimeInPort);
@@ -40,12 +42,15 @@ public:
     int getTimeInPortLeft();
     int getId() const;
     int getCapacityInLitres() const;
-    int getLoadInLiters();
+    int getLoadInLiters();;
+
     LoadStatus getLoadStatus();
     void setLoadStatus(LoadStatus loadStatus);
 
     void setLoadInLiters(int loadInLiters);
 
+    bool isStatusChanged();
+    void setStatusChanged(bool statusChanged);
 };
 
 

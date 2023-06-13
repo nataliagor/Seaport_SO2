@@ -77,8 +77,10 @@ void Seaport::administratorLife(){
 }
 
 void Seaport::giveLeavePermissions(){
-    setNumberOfLoadedShips(portAdministrator->givePermissionsToLeaveDock(getNumberOfLoadedShips()));
-    setNumberOfLoadedTrucks(portAdministrator->givePermissionsToLeaveParking(getNumberOfLoadedTrucks()));
+    setNumberOfLoadedShips(portAdministrator->giveLoadedPermissionsToLeaveDock(getNumberOfLoadedShips()));
+    setNumberOfLoadedTrucks(portAdministrator->giveLoadedPermissionsToLeaveParking(getNumberOfLoadedTrucks()));
+    setNumberOfEmptyShips(portAdministrator->giveEmptyPermissionsToLeaveDock(getNumberOfEmptyShips()));
+    setNumberOfEmptyTrucks(portAdministrator->giveEmptyPermissionsToLeaveParking(getNumberOfEmptyTrucks()));
 }
 
 void Seaport::giveDockPermissions(){
@@ -143,15 +145,16 @@ void Seaport::shipLife(){
     sleep(1);
 
     enterPort(ship);
-    sleep(1);
+    sleep(3);
 
     bool success = reloadShip(ship);          //operacje wykonuje tylko nowo przybyly statek/cezarowka
-    sleep(1);
+    sleep(3);
 
-    if(!success){
-        if(ship->isLoaded()) {while(ship->isEmpty()){}}
-        while(ship->isLoaded()){}
-    }
+    while(!ship->isStatusChanged()){}
+//    if(!success){
+//        if(ship->isLoaded()) {while(ship->isEmpty()){}}
+//        while(ship->isLoaded()){}
+//    }
     leavePort(ship);
 }
 
@@ -173,7 +176,7 @@ void Seaport::enterPort(Ship* ship){
 bool Seaport::reloadShip(Ship* ship){
     std::lock_guard<std::mutex> lock(reloadingMutex);
     Truck *truck = getTruckParkingAreaById(ship->getDock()->getId())->getTruck();
-    if(truck == nullptr) return false;
+    if(truck == nullptr || ship->isStatusChanged() || truck->isStatusChanged()) return false; //|| ship->isStatusChanged() || truck->isStatusChanged()
 
     if(ship->isEmpty() || ship->isBeingLoaded()){                                       // zaladowywanie
         reloadTruckToShip(ship, truck);
@@ -184,7 +187,8 @@ bool Seaport::reloadShip(Ship* ship){
 }
 
 void Seaport::leavePort(Ship* ship){
-    portAdministrator->addToShipsToLeaveQueue(ship);
+    (ship->isLoaded()) ? portAdministrator->addToLoadedShipsToLeaveQueue(ship) : portAdministrator->addToEmptyShipsToLeaveQueue(ship);
+
     while(ship->getDock() != nullptr){}
     ship->leaveSeaport(); //nie trzba bo wszytsko powinno byc juz zwolnione u daministratoa, ale na wszelki wypadek
     delete ship;
@@ -231,16 +235,18 @@ bool Seaport::reloadShipToTruck(Ship *ship, Truck* truck){
 //-----------------------------------truck-----------------------------------
 void Seaport::trucksLife(){
     Truck *truck = newTruckAppears();
+    bool loaded = truck->isLoaded();
     sleep(1);
     enterPort(truck);
-    sleep(1);
+    sleep(3);
     bool success = reloadTruck(truck);
-    sleep(1);
+    sleep(3);
 
-    if(!success){
-        if(truck->isLoaded()) {while(truck->isEmpty()){}}
-        while(truck->isLoaded()){}
-    }
+//    if(!success){
+//        if(truck->isLoaded()) {while(truck->isEmpty()){}}
+//        while(truck->isLoaded()){}
+//    }
+    while(!truck->isStatusChanged()){}
     leavePort(truck);
 }
 
@@ -266,7 +272,7 @@ void Seaport::addTruckToWaitingQueue(Truck* truck){
 bool Seaport::reloadTruck(Truck* truck){
     std::lock_guard<std::mutex> lock(reloadingMutex);
     Ship *ship = getDockById(truck->getTruckParkingArea()->getId())->getShip();
-    if(ship == nullptr) return false;
+    if(ship == nullptr || ship->isStatusChanged() || truck->isStatusChanged()) return false; //|| ship->isStatusChanged() || truck->isStatusChanged()
 
     if(truck->isEmpty() || truck->isBeingLoaded()){                                       // zaladowywanie
         reloadShipToTruck(ship, truck);
@@ -277,7 +283,8 @@ bool Seaport::reloadTruck(Truck* truck){
 }
 
 void Seaport::leavePort(Truck* truck){
-    portAdministrator->addToTrucksToLeaveQueue(truck);
+    (truck->isLoaded()) ? portAdministrator->addToLoadedTrucksToLeaveQueue(truck) : portAdministrator->addToEmptyTrucksToLeaveQueue(truck);
+
     while(truck->getTruckParkingArea() != nullptr){}
     truck->leaveSeaport(); //nie trzba bo wszytsko powinno byc juz zwolnione u daministratoa, ale na wszelki wypadek
     delete truck;

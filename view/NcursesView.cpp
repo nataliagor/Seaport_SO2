@@ -187,7 +187,7 @@ void NcursesView::freeDock(int dockId){
     mvprintw(5 + yChange - 1, 47 + 6, "  ");
     mvprintw(5 + yChange - 1, 47 + 16, "  ");
 
-    mvprintw(5 + yChange, 17, "       ");
+    mvprintw(5 + yChange + 1, 17, "       ");
 
     move(2 + lastPanelInfoPos, 95);                //panel info firstY = 0 + 2, firstX = 95
     printw("Miejsce do cumowania %d zostalo zwolnione                    ", dockId);
@@ -245,7 +245,7 @@ void NcursesView::freeTruckParkingArea(int truckParkingAreaId) {
     mvprintw(5 + yChange, 47 + 6, "  ");
     mvprintw(5 + yChange, 47 + 16, "  ");
 
-    mvprintw(5 + yChange, 17, "       ");
+    mvprintw(5 + yChange + 1, 17, "       ");
 
     move(2 + lastPanelInfoPos, 95);                //panel info firstY = 0 + 2, firstX = 95
     printw("Miejsce prakingowe %d zostalo zwolnione                   ", truckParkingAreaId);

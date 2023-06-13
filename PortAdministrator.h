@@ -16,17 +16,21 @@
 class PortAdministrator {
     std::priority_queue<Ship*> emptyShipsToDockPriorityQueue;                   //segragecja czasem //TODO
     std::priority_queue<Ship*> loadedShipsToDockPriorityQueue;
-    std::priority_queue<Ship*> shipsToLeavePriorityQueue;                       //opuszczją tylko loaded
+    std::priority_queue<Ship*> loadedShipsToLeavePriorityQueue;
+    std::priority_queue<Ship*> emptyShipsToLeavePriorityQueue;
     std::mutex emptyShipsQueueMutex;
     std::mutex loadedShipsQueueMutex;
-    std::mutex leavingShipsQueueMutex;
+    std::mutex loadedLeavingShipsQueueMutex;
+    std::mutex emptyLeavingShipsQueueMutex;
 
     std::priority_queue<Truck*> emptyTrucksToParkPriorityQueue;
     std::priority_queue<Truck*> loadedTrucksToParkPriorityQueue;
-    std::priority_queue<Truck*> trucksToLeavePriorityQueue;                       //opuszczją tylko loaded
+    std::priority_queue<Truck*> loadedTrucksToLeavePriorityQueue;
+    std::priority_queue<Truck*> emptyTrucksToLeavePriorityQueue;
     std::mutex emptyTrucksQueueMutex;
     std::mutex loadedTrucksQueueMutex;
-    std::mutex leavingTrucksQueueMutex;
+    std::mutex loadedLeavingTrucksQueueMutex;
+    std::mutex emptyLeavingTrucksQueueMutex;
 
     IView& view;
 
@@ -36,19 +40,23 @@ public:
 
     void addToEmptyShipsToDockQueue(Ship* ship);
     void addToLoadedShipsToDockQueue(Ship* ship);
-    void addToShipsToLeaveQueue(Ship* ship);
+    void addToLoadedShipsToLeaveQueue(Ship* ship);
+    void addToEmptyShipsToLeaveQueue(Ship* ship);
 
     bool givePermissionToLoadedToDock(Dock* dock);
     bool givePermissionToEmptyToDock(Dock* dock);
-    int givePermissionsToLeaveDock(int numberOfLoadedShips);
+    int giveLoadedPermissionsToLeaveDock(int numberOfLoadedShips);
+    int giveEmptyPermissionsToLeaveDock(int numberOfEmptyShips);
 
     void addToEmptyTrucksToParkQueue(Truck* truck);
     void addToLoadedTrucksToParkQueue(Truck* truck);
-    void addToTrucksToLeaveQueue(Truck* truck);
+    void addToLoadedTrucksToLeaveQueue(Truck* truck);
+    void addToEmptyTrucksToLeaveQueue(Truck* truck);
 
     bool givePermissionToLoadedToPark(TruckParkingArea* truckParkingArea);
     bool givePermissionToEmptyToPark(TruckParkingArea* truckParkingArea);
-    int givePermissionsToLeaveParking(int numberOfLoadedTrucks);
+    int giveLoadedPermissionsToLeaveParking(int numberOfLoadedTrucks);
+    int giveEmptyPermissionsToLeaveParking(int numberOfEmptyTrucks);
 
 };
 

@@ -18,9 +18,14 @@ void PortAdministrator::addToLoadedShipsToDockQueue(Ship* ship) {
     loadedShipsToDockPriorityQueue.push(ship);
 }
 
-void PortAdministrator::addToShipsToLeaveQueue(Ship* ship){
-    std::lock_guard<std::mutex> lock(leavingShipsQueueMutex);
-    shipsToLeavePriorityQueue.push(ship);
+void PortAdministrator::addToLoadedShipsToLeaveQueue(Ship* ship){
+    std::lock_guard<std::mutex> lock(loadedLeavingShipsQueueMutex);
+    loadedShipsToLeavePriorityQueue.push(ship);
+}
+
+void PortAdministrator::addToEmptyShipsToLeaveQueue(Ship* ship){
+    std::lock_guard<std::mutex> lock(emptyLeavingShipsQueueMutex);
+    emptyShipsToLeavePriorityQueue.push(ship);
 }
 
 bool PortAdministrator::givePermissionToLoadedToDock(Dock* dock){
@@ -45,18 +50,32 @@ bool PortAdministrator::givePermissionToEmptyToDock(Dock* dock){
     return true;
 }
 
-int PortAdministrator::givePermissionsToLeaveDock(int numberOfLoadedShips){
-    std::lock_guard<std::mutex> lock(leavingShipsQueueMutex);
-    while(!shipsToLeavePriorityQueue.empty()){
-        if(shipsToLeavePriorityQueue.top()->isLoaded()){
-            Dock* dock = shipsToLeavePriorityQueue.top()->getDock();
+int PortAdministrator::giveLoadedPermissionsToLeaveDock(int numberOfLoadedShips){
+    std::lock_guard<std::mutex> lock(loadedLeavingShipsQueueMutex);
+    while(!loadedShipsToLeavePriorityQueue.empty()){
+        if(loadedShipsToLeavePriorityQueue.top()->isLoaded()){
+            Dock* dock = loadedShipsToLeavePriorityQueue.top()->getDock();
             dock->freeDock();
             numberOfLoadedShips--;
             view.freeDock(dock->getId());
         }
-        shipsToLeavePriorityQueue.pop();
+        loadedShipsToLeavePriorityQueue.pop();
     }
     return numberOfLoadedShips;
+}
+
+int PortAdministrator::giveEmptyPermissionsToLeaveDock(int numberOfEmptyShips){
+    std::lock_guard<std::mutex> lock(emptyLeavingShipsQueueMutex);
+    while(!emptyShipsToLeavePriorityQueue.empty()){
+        if(emptyShipsToLeavePriorityQueue.top()->isEmpty()){
+            Dock* dock = emptyShipsToLeavePriorityQueue.top()->getDock();
+            dock->freeDock();
+            numberOfEmptyShips--;
+            view.freeDock(dock->getId());
+        }
+        emptyShipsToLeavePriorityQueue.pop();
+    }
+    return numberOfEmptyShips;
 }
 
 void PortAdministrator::addToEmptyTrucksToParkQueue(Truck* truck){
@@ -69,9 +88,14 @@ void PortAdministrator::addToLoadedTrucksToParkQueue(Truck* truck){
     loadedTrucksToParkPriorityQueue.push(truck);
 }
 
-void PortAdministrator::addToTrucksToLeaveQueue(Truck* truck){
-    std::lock_guard<std::mutex> lock(leavingTrucksQueueMutex);
-    trucksToLeavePriorityQueue.push(truck);
+void PortAdministrator::addToLoadedTrucksToLeaveQueue(Truck* truck){
+    std::lock_guard<std::mutex> lock(loadedLeavingTrucksQueueMutex);
+    loadedTrucksToLeavePriorityQueue.push(truck);
+}
+
+void PortAdministrator::addToEmptyTrucksToLeaveQueue(Truck* truck){
+    std::lock_guard<std::mutex> lock(emptyLeavingTrucksQueueMutex);
+    emptyTrucksToLeavePriorityQueue.push(truck);
 }
 
 bool PortAdministrator::givePermissionToLoadedToPark(TruckParkingArea* truckParkingArea){
@@ -96,18 +120,32 @@ bool PortAdministrator::givePermissionToEmptyToPark(TruckParkingArea* truckParki
     return true;
 }
 
-int PortAdministrator::givePermissionsToLeaveParking(int numberOfLoadedTrucks){
-    std::lock_guard<std::mutex> lock(leavingTrucksQueueMutex);
-    while(!trucksToLeavePriorityQueue.empty()){
-        if(trucksToLeavePriorityQueue.top()->isLoaded()){
-            TruckParkingArea* truckParkingArea = trucksToLeavePriorityQueue.top()->getTruckParkingArea();
+int PortAdministrator::giveLoadedPermissionsToLeaveParking(int numberOfLoadedTrucks){
+    std::lock_guard<std::mutex> lock(loadedLeavingTrucksQueueMutex);
+    while(!loadedTrucksToLeavePriorityQueue.empty()){
+        if(loadedTrucksToLeavePriorityQueue.top()->isLoaded()){
+            TruckParkingArea* truckParkingArea = loadedTrucksToLeavePriorityQueue.top()->getTruckParkingArea();
             truckParkingArea->freeParkingArea();
             numberOfLoadedTrucks--;
             view.freeTruckParkingArea(truckParkingArea->getId());
         }
-        trucksToLeavePriorityQueue.pop();
+        loadedTrucksToLeavePriorityQueue.pop();
     }
     return numberOfLoadedTrucks;
+}
+
+int PortAdministrator::giveEmptyPermissionsToLeaveParking(int numberOfEmptyTrucks){
+    std::lock_guard<std::mutex> lock(emptyLeavingTrucksQueueMutex);
+    while(!emptyTrucksToLeavePriorityQueue.empty()){
+        if(emptyTrucksToLeavePriorityQueue.top()->isEmpty()){
+            TruckParkingArea* truckParkingArea = emptyTrucksToLeavePriorityQueue.top()->getTruckParkingArea();
+            truckParkingArea->freeParkingArea();
+            numberOfEmptyTrucks--;
+            view.freeTruckParkingArea(truckParkingArea->getId());
+        }
+        emptyTrucksToLeavePriorityQueue.pop();
+    }
+    return numberOfEmptyTrucks;
 }
 
 
