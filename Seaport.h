@@ -55,6 +55,11 @@ class Seaport {
     std::random_device rd;
     PortAdministrator* portAdministrator;
 
+    std::vector<Ship*> ships;
+    std::vector<Truck*> trucks;
+    std::mutex shipsMutex;
+    std::mutex trucksMutex;
+
 public:
     Seaport(int numberOfDocks);
     virtual ~Seaport();
@@ -107,6 +112,13 @@ private:
     std::vector<TruckParkingArea *> &getTruckParkingAreas();
     Dock* getDockById(int id);
     TruckParkingArea* getTruckParkingAreaById(int id);
+
+    void addShipToShipsVector(Ship* ship);
+    void addTruckToTrucksVector(Truck* truck);
+    void deleteShipFromShipsVector(Ship* ship);
+    void deleteTruckFromTrucksVector(Truck* truck);
+    void actualizeShipsTime();
+    void actualizeTrucksTime();
 
 };
 

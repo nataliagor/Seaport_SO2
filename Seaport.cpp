@@ -147,21 +147,20 @@ void Seaport::shipLife(){
     enterPort(ship);
     sleep(3);
 
-    bool success = reloadShip(ship);          //operacje wykonuje tylko nowo przybyly statek/cezarowka
+    reloadShip(ship);          //operacje wykonuje tylko nowo przybyly statek/cezarowka
     sleep(3);
 
     while(!ship->isStatusChanged()){}
-//    if(!success){
-//        if(ship->isLoaded()) {while(ship->isEmpty()){}}
-//        while(ship->isLoaded()){}
-//    }
+    sleep(3);
     leavePort(ship);
+    sleep(1);
 }
 
 Ship* Seaport::newShipAppears(){
     int shipId = getCurrentShipId();
-    int capacityInLitres = getRandomNumb(1,1);
-    int loadInLiters = getRandomNumb(0,capacityInLitres);
+
+    int capacityInLitres = getRandomNumb(1,6);
+    int loadInLiters = getRandomNumb(0,1) == 0 ? 0 : getRandomNumb(1,capacityInLitres);
     Ship *newShip = new Ship(shipId, capacityInLitres,loadInLiters, getRandomNumb(2, 48));
 
     view->newShipAppears(shipId, capacityInLitres, loadInLiters);
@@ -235,25 +234,22 @@ bool Seaport::reloadShipToTruck(Ship *ship, Truck* truck){
 //-----------------------------------truck-----------------------------------
 void Seaport::trucksLife(){
     Truck *truck = newTruckAppears();
-    bool loaded = truck->isLoaded();
     sleep(1);
     enterPort(truck);
     sleep(3);
-    bool success = reloadTruck(truck);
+    reloadTruck(truck);
     sleep(3);
 
-//    if(!success){
-//        if(truck->isLoaded()) {while(truck->isEmpty()){}}
-//        while(truck->isLoaded()){}
-//    }
     while(!truck->isStatusChanged()){}
+    sleep(3);
     leavePort(truck);
+    sleep(1);
 }
 
 Truck* Seaport::newTruckAppears(){
     int truckId = getCurrentTruckId();
-    int capacityInLitres = getRandomNumb(1,1);
-    int loadInLiters = getRandomNumb(0,capacityInLitres);
+    int capacityInLitres = getRandomNumb(1,6);
+    int loadInLiters = getRandomNumb(0,1) == 0 ? 0 : getRandomNumb(1,capacityInLitres);
     Truck *newTruck = new Truck(truckId, capacityInLitres, loadInLiters, getRandomNumb(2, 48));
 
     view->newTruckAppears(truckId, capacityInLitres, loadInLiters);
@@ -290,6 +286,33 @@ void Seaport::leavePort(Truck* truck){
     delete truck;
 }
 
+
+//--------------------------ships and trucks vectors--------------------------
+
+
+void Seaport::addShipToShipsVector(Ship* ship){
+    std::lock_guard<std::mutex> lock(shipsMutex);
+}
+
+void Seaport::addTruckToTrucksVector(Truck* truck){
+    std::lock_guard<std::mutex> lock(trucksMutex);
+}
+
+void Seaport::deleteShipFromShipsVector(Ship* ship){
+    std::lock_guard<std::mutex> lock(shipsMutex);
+}
+
+void Seaport::deleteTruckFromTrucksVector(Truck* truck){
+    std::lock_guard<std::mutex> lock(trucksMutex);
+}
+
+void Seaport::actualizeShipsTime(){
+
+}
+
+void Seaport::actualizeTrucksTime(){
+
+}
 
 //----------------------------getters and setters----------------------------
 int Seaport::getNumberOfEmptyTrucks(){

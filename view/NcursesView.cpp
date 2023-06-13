@@ -166,12 +166,15 @@ void NcursesView::newShipAppears(int shipId, int capacityInLitres, int loadInLit
 
     move(firstY + lastShipPosInQueue, firstX);
     printw("%d", shipId);
+    mvprintw(firstY + lastShipPosInQueue + 1, firstX, "  ");
 
     move(firstY + lastShipPosInQueue, firstX + 6);
     printw(" %d", capacityInLitres);
+    mvprintw(firstY + lastShipPosInQueue + 1, firstX + 6, "    ");
 
     move(firstY + lastShipPosInQueue, firstX + 16);
     printw(" %d", loadInLiters);
+    mvprintw(firstY + lastShipPosInQueue + 1, firstX + 16, "    ");
 
     lastShipPosInQueue = lastShipPosInQueue == 25 ? lastShipPosInQueue = 0 : ++lastShipPosInQueue;
     refresh();
@@ -191,6 +194,7 @@ void NcursesView::freeDock(int dockId){
 
     move(2 + lastPanelInfoPos, 95);                //panel info firstY = 0 + 2, firstX = 95
     printw("Miejsce do cumowania %d zostalo zwolnione                    ", dockId);
+    mvprintw(2 + lastPanelInfoPos + 1, 95, "                                                                    ");
 
     lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
     refresh();
@@ -212,6 +216,7 @@ void NcursesView::occupyDock(int dockId, int shipId, int capacityInLitres, int l
 
     move(2 + lastPanelInfoPos, 95);                //panel info firstY = 0 + 2, firstX = 95
     printw("Miejsce do cumowania %d zostalo zajete przez statek %d      ", dockId, shipId);
+    mvprintw(2 + lastPanelInfoPos + 1, 95, "                                                                    ");
 
     lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
     refresh();
@@ -224,12 +229,15 @@ void NcursesView::newTruckAppears(int truckId, int capacityInLitres, int loadInL
 
     move(firstY + lastTruckPosInQueue, firstX);
     printw("%d", truckId);
+    mvprintw(firstY + lastTruckPosInQueue + 1, firstX, "  ");
 
     move(firstY + lastTruckPosInQueue, firstX + 6);
     printw(" %d", capacityInLitres);
+    mvprintw(firstY + lastTruckPosInQueue + 1, firstX + 6, "    ");
 
     move(firstY + lastTruckPosInQueue, firstX + 16);
     printw(" %d", loadInLiters);
+    mvprintw(firstY + lastTruckPosInQueue + 1, firstX + 16, "    ");
 
     lastTruckPosInQueue = lastTruckPosInQueue == 25 ? lastTruckPosInQueue = 0 : ++lastTruckPosInQueue;
     refresh();
@@ -249,6 +257,7 @@ void NcursesView::freeTruckParkingArea(int truckParkingAreaId) {
 
     move(2 + lastPanelInfoPos, 95);                //panel info firstY = 0 + 2, firstX = 95
     printw("Miejsce prakingowe %d zostalo zwolnione                   ", truckParkingAreaId);
+    mvprintw(2 + lastPanelInfoPos + 1, 95, "                                                                    ");
 
     lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
     refresh();
@@ -270,6 +279,7 @@ void NcursesView::occupyTruckParkingArea(int truckParkingAreaId, int truckId, in
 
     move(2 + lastPanelInfoPos, 95);                //panel info firstY = 0 + 2, firstX = 95
     printw("Miejsce prakingowe %d zostalo zajete przez ciezarowke %d      ", truckParkingAreaId, truckId);
+    mvprintw(2 + lastPanelInfoPos + 1, 95, "                                                                    ");
 
     lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
     refresh();
@@ -289,6 +299,7 @@ void NcursesView::reloadTruckToShip(int dockId, int shipId, int truckId, int amo
 
     move(2 + lastPanelInfoPos, 95);                             //panel info firstY = 0 + 2, firstX = 95
     printw("Przeladowanie %d l ladunku z ciezarowki %d, do statku %d     ", amount, truckId, shipId);
+    mvprintw(2 + lastPanelInfoPos + 1, 95, "                                                                    ");
     lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
 
     refresh();
@@ -309,6 +320,7 @@ void NcursesView::reloadShipToTruck(int dockId, int shipId, int truckId, int amo
 
     move(2 + lastPanelInfoPos, 95);                           //panel info firstY = 0 + 2, firstX = 95
     printw("Przeladowanie %d l ladunku z statku %d, do ciezarowki %d     ", amount, shipId, truckId);
+    mvprintw(2 + lastPanelInfoPos + 1, 95, "                                                                    ");
     lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
 
     refresh();
