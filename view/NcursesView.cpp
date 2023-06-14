@@ -6,7 +6,7 @@
 
 
 
-NcursesView::NcursesView(int numberOfDocks) : numberOfDocks(numberOfDocks), lastShipPosInQueue(0) , lastTruckPosInQueue(0), lastPanelInfoPos(0) {
+NcursesView::NcursesView(int numberOfDocks) : numberOfDocks(numberOfDocks), lastShipPosInList(0) , lastTruckPosInList(0), lastPanelInfoPos(0) {
     initscr();
     initializeColors();
 
@@ -74,17 +74,25 @@ void NcursesView::writeHeadlines(int docksXPosition, int parkingAreasXPosition){
     mvprintw(0, 47, "Informacje o statku i ciezarowce");                         //info y = 0, x = 47, headline = 5
     mvprintw(0, 95, "Panel informacyjny");                                       //panel y = 0, x = 95, headline = 5
 
-    mvprintw(21, 95, "Kolejka oczekujacych statkow");                            //kolejka statkow y = 21, x = 95, headline = 5
-    mvprintw(21, 140, "Kolejka oczekujacych ciezarowek");                       //kolejka ciezarowek y = 21, x = 140
+    mvprintw(21, 95, "Nowe statki");                            //lista nowych statkow y = 21, x = 95, headline = 5
+    mvprintw(21, 122, "Nowe ciezarowki");                       //lista nowych ciezarowek y = 21, x = 125
+
+    mvprintw(21, 149, "Aktualnie statki");                   //kolejka statkow y = 21, x = 95, headline = 5
+    mvprintw(22, 149, "w porcie");
+
+    mvprintw(21, 176, "Aktualnie ciezarowki");                  //kolejka ciezarowek y = 21, x = 140
+    mvprintw(22, 176, "w porcie");
     attroff(A_BOLD);
 
     drawHorizontalLine(19, 91, 200, '_');
     drawVerticalLine( 0, 90, 60, '|');
 
-    vehiclesParametersHeadlines(23, 95, true);      //kolejka statkow
-    vehiclesParametersHeadlines(23, 140, true);     //kolejka ciezarowek
     vehiclesParametersHeadlines(2, 47, false);     //informacje przy dockach i parkingach
 
+    vehiclesParametersHeadlines(23, 95, true);      //nowe statki
+    vehiclesParametersHeadlines(23, 122, true);     //noew ciezarowki
+    vehiclesTimeInPortHeadlines(23, 149, true);
+    vehiclesTimeInPortHeadlines(23, 176, true);
 }
 
 void NcursesView::vehiclesParametersHeadlines(int yPosition, int xPosition, bool drawLines){
@@ -93,13 +101,25 @@ void NcursesView::vehiclesParametersHeadlines(int yPosition, int xPosition, bool
     mvprintw(yPosition + 1, xPosition + 6, "[l]");
     mvprintw(yPosition, xPosition + 16, "Ladunek");
     mvprintw(yPosition + 1, xPosition + 16, "[l]");
-    mvprintw(yPosition, xPosition + 26, "Pozostaly");
-    mvprintw(yPosition + 1, xPosition + 26, "czas");
 
     if(drawLines){
         drawVerticalLine( yPosition, xPosition + 5, 60, ':');
         drawVerticalLine( yPosition, xPosition + 15, 60, ':');
-        drawVerticalLine( yPosition, xPosition + 25, 60, ':');
+    }
+}
+
+void NcursesView::vehiclesTimeInPortHeadlines(int yPosition, int xPosition, bool drawLines){
+    mvprintw(yPosition, xPosition, "Nr");
+    mvprintw(yPosition, xPosition + 6, "Max czas");
+    mvprintw(yPosition + 1, xPosition + 6, "w porcie");
+    mvprintw(yPosition + 2, xPosition + 6, "[h]");
+    mvprintw(yPosition, xPosition + 16, "Czas");
+    mvprintw(yPosition + 1, xPosition + 16, "w porcie");
+    mvprintw(yPosition + 2, xPosition + 16, "[h]");
+
+    if(drawLines){
+        drawVerticalLine( yPosition, xPosition + 5, 60, ':');
+        drawVerticalLine( yPosition, xPosition + 15, 60, ':');
     }
 }
 
@@ -159,24 +179,24 @@ void NcursesView::test(std::string test) {
 
 }
 
-void NcursesView::newShipAppears(int shipId, int capacityInLitres, int loadInLiters) {
+void NcursesView::newShipAppears(int shipId, int capacityInLitres, int loadInLiters, int maxTimeInPort) {
     std::lock_guard<std::mutex> lock(mutex);
     int firstY = 21 + 5;
     int firstX = 95;
 
-    move(firstY + lastShipPosInQueue, firstX);
+    move(firstY + lastShipPosInList, firstX);
     printw("%d", shipId);
-    mvprintw(firstY + lastShipPosInQueue + 1, firstX, "  ");
+    mvprintw(firstY + lastShipPosInList + 1, firstX, "  ");
 
-    move(firstY + lastShipPosInQueue, firstX + 6);
+    move(firstY + lastShipPosInList, firstX + 6);
     printw(" %d", capacityInLitres);
-    mvprintw(firstY + lastShipPosInQueue + 1, firstX + 6, "    ");
+    mvprintw(firstY + lastShipPosInList + 1, firstX + 6, "    ");
 
-    move(firstY + lastShipPosInQueue, firstX + 16);
+    move(firstY + lastShipPosInList, firstX + 16);
     printw(" %d", loadInLiters);
-    mvprintw(firstY + lastShipPosInQueue + 1, firstX + 16, "    ");
+    mvprintw(firstY + lastShipPosInList + 1, firstX + 16, "    ");
 
-    lastShipPosInQueue = lastShipPosInQueue == 25 ? lastShipPosInQueue = 0 : ++lastShipPosInQueue;
+    lastShipPosInList = lastShipPosInList == 25 ? lastShipPosInList = 0 : ++lastShipPosInList;
     refresh();
 }
 
@@ -222,24 +242,24 @@ void NcursesView::occupyDock(int dockId, int shipId, int capacityInLitres, int l
     refresh();
 }
 
-void NcursesView::newTruckAppears(int truckId, int capacityInLitres, int loadInLiters) {
+void NcursesView::newTruckAppears(int truckId, int capacityInLitres, int loadInLiters, int maxTimeInPort) {
     std::lock_guard<std::mutex> lock(mutex);
     int firstY = 21 + 5;
-    int firstX = 140;
+    int firstX = 122;
 
-    move(firstY + lastTruckPosInQueue, firstX);
+    move(firstY + lastTruckPosInList, firstX);
     printw("%d", truckId);
-    mvprintw(firstY + lastTruckPosInQueue + 1, firstX, "  ");
+    mvprintw(firstY + lastTruckPosInList + 1, firstX, "  ");
 
-    move(firstY + lastTruckPosInQueue, firstX + 6);
+    move(firstY + lastTruckPosInList, firstX + 6);
     printw(" %d", capacityInLitres);
-    mvprintw(firstY + lastTruckPosInQueue + 1, firstX + 6, "    ");
+    mvprintw(firstY + lastTruckPosInList + 1, firstX + 6, "    ");
 
-    move(firstY + lastTruckPosInQueue, firstX + 16);
+    move(firstY + lastTruckPosInList, firstX + 16);
     printw(" %d", loadInLiters);
-    mvprintw(firstY + lastTruckPosInQueue + 1, firstX + 16, "    ");
+    mvprintw(firstY + lastTruckPosInList + 1, firstX + 16, "    ");
 
-    lastTruckPosInQueue = lastTruckPosInQueue == 25 ? lastTruckPosInQueue = 0 : ++lastTruckPosInQueue;
+    lastTruckPosInList = lastTruckPosInList == 25 ? lastTruckPosInList = 0 : ++lastTruckPosInList;
     refresh();
 }
 
@@ -324,4 +344,62 @@ void NcursesView::reloadShipToTruck(int dockId, int shipId, int truckId, int amo
     lastPanelInfoPos = lastPanelInfoPos == 15 ? lastPanelInfoPos = 0 : ++lastPanelInfoPos;
 
     refresh();
+}
+
+
+void NcursesView::showShipsQueue(int shipId, int maxTimeInPort, int timeInPort, bool newQueue) {
+    std::lock_guard<std::mutex> lock(mutex);
+    int firstY = 21 + 5;
+    int firstX = 149;
+
+    if(newQueue){
+        lastShipPosInQueue = 0;
+        cleanQueue(firstY, firstX);
+        return;
+    }
+
+    move(firstY + lastShipPosInQueue, firstX);
+    printw("%d   ", shipId);
+
+    move(firstY + lastShipPosInQueue, firstX + 6);
+    printw(" %d   ", maxTimeInPort);
+
+    move(firstY + lastShipPosInQueue, firstX + 16);
+    printw(" %d   ", timeInPort);
+
+    refresh();
+    lastShipPosInQueue = lastShipPosInQueue + 1;
+}
+
+void NcursesView::showTruckQueue(int truckId, int maxTimeInPort, int timeInPort, bool newQueue) {
+    std::lock_guard<std::mutex> lock(mutex);
+    int firstY = 21 + 5;
+    int firstX = 176;
+    if(newQueue){
+        lastTruckPosInQueue = 0;
+        cleanQueue(firstY, firstX);
+        return;
+    }
+
+    move(firstY + lastTruckPosInQueue, firstX);
+    printw("%d   ", truckId);
+
+    move(firstY + lastTruckPosInQueue, firstX + 6);
+    printw(" %d   ", maxTimeInPort);
+
+    move(firstY + lastTruckPosInQueue, firstX + 16);
+    printw(" %d   ", timeInPort);
+
+    refresh();
+    lastTruckPosInQueue = lastTruckPosInQueue + 1;
+
+}
+
+
+void NcursesView::cleanQueue(int firstY, int firstX){
+    for(int y = 0 ; y < 30 ; y++){
+        mvprintw(firstY + y, firstX, "    ");
+        mvprintw(firstY + y, firstX + 6, "    ");
+        mvprintw(firstY + y, firstX + 16, "    ");
+    }
 }

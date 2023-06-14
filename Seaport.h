@@ -12,6 +12,7 @@
 //#include <windows.h>
 #include <unistd.h>
 #include <typeinfo>
+#include <algorithm>
 #include "view/IView.h"
 #include "view/ConsoleView.h"
 #include "view/NcursesView.h"
@@ -55,10 +56,9 @@ class Seaport {
     std::random_device rd;
     PortAdministrator* portAdministrator;
 
-    std::vector<Ship*> ships;
-    std::vector<Truck*> trucks;
-    std::mutex shipsMutex;
-    std::mutex trucksMutex;
+    std::vector<Vehicle*> vehicles;
+    std::mutex vehiclesMutex;
+    std::thread timeActualizeThread;
 
 public:
     Seaport(int numberOfDocks);
@@ -113,12 +113,9 @@ private:
     Dock* getDockById(int id);
     TruckParkingArea* getTruckParkingAreaById(int id);
 
-    void addShipToShipsVector(Ship* ship);
-    void addTruckToTrucksVector(Truck* truck);
-    void deleteShipFromShipsVector(Ship* ship);
-    void deleteTruckFromTrucksVector(Truck* truck);
-    void actualizeShipsTime();
-    void actualizeTrucksTime();
+    void addVehicleToVehiclesVector(Vehicle* vehicle);
+    void deleteVehicleFromVehiclesVector(Vehicle* vehicle);
+    void actualizeTimeInPort();
 
 };
 

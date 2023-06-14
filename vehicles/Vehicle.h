@@ -22,12 +22,11 @@ protected:
     std::mutex loadStatusMutex;
     std::mutex loadInLitersMutex;
     std::mutex timeInPortMutex;
-    std::mutex maxTimeInPortMutex;
     std::mutex statusChangedMutex;
 
 public:
     Vehicle(int id, int capacityInLitres, int loadInLiters, int maxTimeInPort);
-    ~Vehicle();
+    virtual ~Vehicle();
     bool isEmpty();
     bool isLoaded();
     bool isBeingLoaded();
@@ -37,20 +36,21 @@ public:
     int unload(int amount) ;
     int load(int amount) ;
 
-    int getTimeInPort();
-    int getMaxTimeInPort();
-    int getTimeInPortLeft();
     int getId() const;
     int getCapacityInLitres() const;
     int getLoadInLiters();;
+    void setLoadInLiters(int loadInLiters);
 
     LoadStatus getLoadStatus();
     void setLoadStatus(LoadStatus loadStatus);
-
-    void setLoadInLiters(int loadInLiters);
-
     bool isStatusChanged();
     void setStatusChanged(bool statusChanged);
+
+    void setTimeInPort(int timeInPort);
+    int getTimeInPort();
+    int getMaxTimeInPort();
+    int getTimeInPortLeft();
+    int getLeftTimeInPort();
 };
 
 

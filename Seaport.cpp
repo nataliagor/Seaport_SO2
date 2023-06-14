@@ -16,16 +16,20 @@ Seaport::~Seaport() {}
 void Seaport::startWorking(){
     initializeView();
 
-    portAdministrator = new PortAdministrator(*view);                   //administrator portu
+    portAdministrator = new PortAdministrator(*view);                      //administrator portu
     adminThread = std::thread([&](){
         while(true) {
             administratorLife();
         }
     });
 
-    int doWhile = 30;
-    while(doWhile > 0){
-        doWhile--;
+    timeActualizeThread = std::thread([&](){                        //aktualizacja czasu
+        while(true) {
+            actualizeTimeInPort();
+        }
+    });
+
+    while(true){
         sleep(getRandomNumb(0,3));                          //statki
         shipsThreads.emplace_back([&](){                           //nowy watek dodawany do wektora shipsThreads
             shipLife();                                                     //kod wykonywany przez wątek
@@ -38,6 +42,7 @@ void Seaport::startWorking(){
     }
 
     adminThread.join();                                                     //laczenie wszystkich watkow
+    timeActualizeThread.join();
     for (auto& shipThread : shipsThreads) {
         if (shipThread.joinable()) {
             shipThread.join();
@@ -161,9 +166,11 @@ Ship* Seaport::newShipAppears(){
 
     int capacityInLitres = getRandomNumb(1,6);
     int loadInLiters = getRandomNumb(0,1) == 0 ? 0 : getRandomNumb(1,capacityInLitres);
-    Ship *newShip = new Ship(shipId, capacityInLitres,loadInLiters, getRandomNumb(2, 48));
+    int maxTimeInPort = getRandomNumb(2, 48);
+    Ship *newShip = new Ship(shipId, capacityInLitres,loadInLiters, maxTimeInPort);
 
-    view->newShipAppears(shipId, capacityInLitres, loadInLiters);
+    addVehicleToVehiclesVector(newShip);
+    view->newShipAppears(shipId, capacityInLitres, loadInLiters, maxTimeInPort);
     return newShip;
 }
 
@@ -190,6 +197,7 @@ void Seaport::leavePort(Ship* ship){
 
     while(ship->getDock() != nullptr){}
     ship->leaveSeaport(); //nie trzba bo wszytsko powinno byc juz zwolnione u daministratoa, ale na wszelki wypadek
+    deleteVehicleFromVehiclesVector(ship);
     delete ship;
 }
 
@@ -250,9 +258,11 @@ Truck* Seaport::newTruckAppears(){
     int truckId = getCurrentTruckId();
     int capacityInLitres = getRandomNumb(1,6);
     int loadInLiters = getRandomNumb(0,1) == 0 ? 0 : getRandomNumb(1,capacityInLitres);
-    Truck *newTruck = new Truck(truckId, capacityInLitres, loadInLiters, getRandomNumb(2, 48));
+    int maxTimeInPort = getRandomNumb(2, 48);
+    Truck *newTruck = new Truck(truckId, capacityInLitres, loadInLiters, maxTimeInPort);
 
-    view->newTruckAppears(truckId, capacityInLitres, loadInLiters);
+    addVehicleToVehiclesVector(newTruck);
+    view->newTruckAppears(truckId, capacityInLitres, loadInLiters, maxTimeInPort);
     return newTruck;
 }
 
@@ -283,35 +293,39 @@ void Seaport::leavePort(Truck* truck){
 
     while(truck->getTruckParkingArea() != nullptr){}
     truck->leaveSeaport(); //nie trzba bo wszytsko powinno byc juz zwolnione u daministratoa, ale na wszelki wypadek
+    deleteVehicleFromVehiclesVector(truck);
     delete truck;
 }
 
 
-//--------------------------ships and trucks vectors--------------------------
+//-----------------------vehicles vector and time in port-----------------------
 
-
-void Seaport::addShipToShipsVector(Ship* ship){
-    std::lock_guard<std::mutex> lock(shipsMutex);
+void Seaport::addVehicleToVehiclesVector(Vehicle* vehicle){
+    std::lock_guard<std::mutex> lock(vehiclesMutex);
+    vehicles.push_back(vehicle);
 }
 
-void Seaport::addTruckToTrucksVector(Truck* truck){
-    std::lock_guard<std::mutex> lock(trucksMutex);
+void Seaport::deleteVehicleFromVehiclesVector(Vehicle* vehicle){
+    std::lock_guard<std::mutex> lock(vehiclesMutex);
+    vehicles.erase(std::remove(vehicles.begin(), vehicles.end(), vehicle), vehicles.end());
 }
 
-void Seaport::deleteShipFromShipsVector(Ship* ship){
-    std::lock_guard<std::mutex> lock(shipsMutex);
-}
+void Seaport::actualizeTimeInPort(){
+    sleep(2);
+    std::lock_guard<std::mutex> lock(vehiclesMutex);
+    for (Vehicle* vehicle : vehicles) {
+        vehicle->setTimeInPort(vehicle->getTimeInPort() + 1);
+    }
 
-void Seaport::deleteTruckFromTrucksVector(Truck* truck){
-    std::lock_guard<std::mutex> lock(trucksMutex);
-}
-
-void Seaport::actualizeShipsTime(){
-
-}
-
-void Seaport::actualizeTrucksTime(){
-
+    view->showShipsQueue(0, 0, 0, true);
+    view->showTruckQueue(0, 0, 0, true);
+    std::vector<Vehicle*> copyVector  = vehicles;
+    for (Vehicle* vehicle : copyVector) {
+        if(typeid(*vehicle) == typeid(Ship))
+            view->showShipsQueue(vehicle->getId(), vehicle->getMaxTimeInPort(), vehicle->getTimeInPort(), false);
+        if(typeid(*vehicle) == typeid(Truck))
+            view->showTruckQueue(vehicle->getId(), vehicle->getMaxTimeInPort(), vehicle->getTimeInPort(), false);
+    }
 }
 
 //----------------------------getters and setters----------------------------

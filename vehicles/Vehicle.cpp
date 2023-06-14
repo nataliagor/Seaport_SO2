@@ -55,16 +55,6 @@ int Vehicle::load(int amount){
     return getCapacityInLitres() - getLoadInLiters();
 }
 
-int Vehicle::getTimeInPort(){
-    std::lock_guard<std::mutex> lock(timeInPortMutex);
-    return timeInPort;
-}
-
-int Vehicle::getMaxTimeInPort(){
-    std::lock_guard<std::mutex> lock(maxTimeInPortMutex);
-    return maxTimeInPort;
-}
-
 int Vehicle::getId() const {
     return id;
 }
@@ -102,6 +92,27 @@ void Vehicle::setLoadStatus(LoadStatus loadStatus) {
     std::lock_guard<std::mutex> lock(loadStatusMutex);
     Vehicle::loadStatus = loadStatus;
 }
+
+void Vehicle::setTimeInPort(int timeInPort) {
+    std::lock_guard<std::mutex> lock(timeInPortMutex);
+    Vehicle::timeInPort = timeInPort;
+}
+
+int Vehicle::getTimeInPort(){
+    std::lock_guard<std::mutex> lock(timeInPortMutex);
+    return timeInPort;
+}
+
+int Vehicle::getMaxTimeInPort(){
+    return maxTimeInPort;
+}
+
+
+int Vehicle::getLeftTimeInPort(){
+    return getMaxTimeInPort() - getTimeInPort();
+}
+
+
 
 
 

@@ -20,7 +20,7 @@ void ConsoleView::test(std::string test){
     std::cout << "TEST: " << test << std::endl;
 }
 
-void ConsoleView::newShipAppears(int shipId, int capacityInLitres, int loadInLiters){
+void ConsoleView::newShipAppears(int shipId, int capacityInLitres, int loadInLiters, int maxTimeInPort){
     std::lock_guard<std::mutex> lock(mutex);
     std::cout << "Statek " << shipId << " pojemnosc: " << capacityInLitres << " ladunek: " << loadInLiters <<std::endl;
 }
@@ -35,7 +35,7 @@ void ConsoleView::occupyDock(int dockId, int shipId, int capacityInLitres, int l
     std::cout << "Miejsce do cumowania " << dockId << " zostalo zajete przez statek " <<  shipId << std::endl;
 }
 
-void ConsoleView::newTruckAppears(int truckId, int capacityInLitres, int loadInLiters){
+void ConsoleView::newTruckAppears(int truckId, int capacityInLitres, int loadInLiters, int maxTimeInPort){
     std::lock_guard<std::mutex> lock(mutex);
     std::cout << "Ciezarowka " << truckId << " pojemnosc: " << capacityInLitres << " ladunek: " << loadInLiters << std::endl;
 }
@@ -60,4 +60,13 @@ void ConsoleView::reloadShipToTruck(int dockId, int shipId, int truckId, int amo
     std::lock_guard<std::mutex> lock(mutex);
     std::cout << "Przeladowanie " << amount << " litrow z statku " << shipId << " do ciezarowki " <<  truckId << std::endl;
 }
+
+void ConsoleView::showShipsQueue(int shipId, int maxTimeInPort, int timeInPort, bool newQueue) {
+
+}
+
+void ConsoleView::showTruckQueue(int truckId, int maxTimeInPort, int timeInPort, bool newQueue) {
+
+}
+
 
