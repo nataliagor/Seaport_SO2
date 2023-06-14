@@ -150,13 +150,13 @@ void Seaport::shipLife(){
     sleep(1);
 
     enterPort(ship);
-    sleep(3);
+    sleep(5);
 
     reloadShip(ship);          //operacje wykonuje tylko nowo przybyly statek/cezarowka
     sleep(3);
 
     while(!ship->isStatusChanged()){}
-    sleep(3);
+    sleep(2);
     leavePort(ship);
     sleep(1);
 }
@@ -244,12 +244,12 @@ void Seaport::trucksLife(){
     Truck *truck = newTruckAppears();
     sleep(1);
     enterPort(truck);
-    sleep(3);
+    sleep(5);
     reloadTruck(truck);
     sleep(3);
 
     while(!truck->isStatusChanged()){}
-    sleep(3);
+    sleep(2);
     leavePort(truck);
     sleep(1);
 }
@@ -311,7 +311,7 @@ void Seaport::deleteVehicleFromVehiclesVector(Vehicle* vehicle){
 }
 
 void Seaport::actualizeTimeInPort(){
-    sleep(2);
+    sleep(3);
     std::lock_guard<std::mutex> lock(vehiclesMutex);
     for (Vehicle* vehicle : vehicles) {
         vehicle->setTimeInPort(vehicle->getTimeInPort() + 1);

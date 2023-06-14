@@ -357,6 +357,7 @@ void NcursesView::showShipsQueue(int shipId, int maxTimeInPort, int timeInPort, 
         cleanQueue(firstY, firstX);
         return;
     }
+    if(lastShipPosInQueue > 28) return;
 
     move(firstY + lastShipPosInQueue, firstX);
     printw("%d   ", shipId);
@@ -375,11 +376,13 @@ void NcursesView::showTruckQueue(int truckId, int maxTimeInPort, int timeInPort,
     std::lock_guard<std::mutex> lock(mutex);
     int firstY = 21 + 5;
     int firstX = 176;
+
     if(newQueue){
         lastTruckPosInQueue = 0;
         cleanQueue(firstY, firstX);
         return;
     }
+    if(lastTruckPosInQueue > 28) return;
 
     move(firstY + lastTruckPosInQueue, firstX);
     printw("%d   ", truckId);
