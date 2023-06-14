@@ -13,20 +13,32 @@
 #include "view/IView.h"
 
 
+struct CompareShipsByTimeLeft {
+    bool operator()(Ship* ship1, Ship* ship2) const {
+        return ship1->getLeftTimeInPort() > ship2->getLeftTimeInPort();
+    }
+};
+
+struct CompareTrucksByTimeLeft {
+    bool operator()(Truck* truck1, Truck* truck2) const {
+        return truck1->getLeftTimeInPort() > truck2->getLeftTimeInPort();
+    }
+};
+
 class PortAdministrator {
-    std::priority_queue<Ship*> emptyShipsToDockPriorityQueue;                   //segragecja czasem //TODO
-    std::priority_queue<Ship*> loadedShipsToDockPriorityQueue;
-    std::priority_queue<Ship*> loadedShipsToLeavePriorityQueue;
-    std::priority_queue<Ship*> emptyShipsToLeavePriorityQueue;
+    std::priority_queue<Ship*, std::vector<Ship*>, CompareShipsByTimeLeft> emptyShipsToDockPriorityQueue;
+    std::priority_queue<Ship*, std::vector<Ship*>, CompareShipsByTimeLeft>loadedShipsToDockPriorityQueue;
+    std::priority_queue<Ship*, std::vector<Ship*>, CompareShipsByTimeLeft> loadedShipsToLeavePriorityQueue;
+    std::priority_queue<Ship*, std::vector<Ship*>, CompareShipsByTimeLeft>emptyShipsToLeavePriorityQueue;
     std::mutex emptyShipsQueueMutex;
     std::mutex loadedShipsQueueMutex;
     std::mutex loadedLeavingShipsQueueMutex;
     std::mutex emptyLeavingShipsQueueMutex;
 
-    std::priority_queue<Truck*> emptyTrucksToParkPriorityQueue;
-    std::priority_queue<Truck*> loadedTrucksToParkPriorityQueue;
-    std::priority_queue<Truck*> loadedTrucksToLeavePriorityQueue;
-    std::priority_queue<Truck*> emptyTrucksToLeavePriorityQueue;
+    std::priority_queue<Truck*, std::vector<Truck*>, CompareTrucksByTimeLeft> emptyTrucksToParkPriorityQueue;
+    std::priority_queue<Truck*, std::vector<Truck*>, CompareTrucksByTimeLeft>  loadedTrucksToParkPriorityQueue;
+    std::priority_queue<Truck*, std::vector<Truck*>, CompareTrucksByTimeLeft>  loadedTrucksToLeavePriorityQueue;
+    std::priority_queue<Truck*, std::vector<Truck*>, CompareTrucksByTimeLeft>  emptyTrucksToLeavePriorityQueue;
     std::mutex emptyTrucksQueueMutex;
     std::mutex loadedTrucksQueueMutex;
     std::mutex loadedLeavingTrucksQueueMutex;
