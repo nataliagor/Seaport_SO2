@@ -29,31 +29,40 @@ void Seaport::startWorking(){
         }
     });
 
-    while(true){
-        sleep(getRandomNumb(0,3));                          //statki
-        shipsThreads.emplace_back([&](){                           //nowy watek dodawany do wektora shipsThreads
-            shipLife();                                                     //kod wykonywany przez wątek
-        });
+    shipCreator = std::thread([&](){
+        while(true){
+            sleep(getRandomNumb(0,3));                          //statki
+            shipsThreads.emplace_back([&](){                           //nowy watek dodawany do wektora shipsThreads
+                shipLife();                                                     //kod wykonywany przez wątek
+            });
+            sleep(getRandomNumb(0,2));
+        }
+        for (auto& shipThread : shipsThreads) {
+            if (shipThread.joinable()) {
+                shipThread.join();
+            }
+        }
+    });
 
-        sleep(getRandomNumb(0,1));                          //ciezarowki
-        trucksThreads.emplace_back([&](){
-            trucksLife();
-        });
-    }
+    truckCreator = std::thread([&]() {
+        while (true) {
+            sleep(getRandomNumb(0, 1));                          //ciezarowki
+            trucksThreads.emplace_back([&]() {
+                trucksLife();
+            });
+            sleep(getRandomNumb(0,2));
+        }
+        for (auto& truckThread : trucksThreads) {
+            if (truckThread.joinable()) {
+                truckThread.join();
+            }
+        }
+    });
 
     adminThread.join();                                                     //laczenie wszystkich watkow
+    shipCreator.join();
+    truckCreator.join();
     timeActualizeThread.join();
-    for (auto& shipThread : shipsThreads) {
-        if (shipThread.joinable()) {
-            shipThread.join();
-        }
-    }
-    for (auto& truckThread : trucksThreads) {
-        if (truckThread.joinable()) {
-            truckThread.join();
-        }
-    }
-
     exitView();
 }
 

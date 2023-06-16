@@ -41,6 +41,8 @@ class Seaport {
     std::vector<std::thread> shipsThreads;
     std::vector<std::thread> trucksThreads;
     std::thread adminThread;
+    std::thread shipCreator;
+    std::thread truckCreator;
 
     std::mutex lastShipIdMutex;
     std::mutex lastTruckIdMutex;
