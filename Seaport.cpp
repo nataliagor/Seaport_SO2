@@ -30,12 +30,11 @@ void Seaport::startWorking(){
     });
 
     shipCreator = std::thread([&](){
-        while(true){
-            sleep(getRandomNumb(0,3));                          //statki
+        while(true){                                                              //statki
             shipsThreads.emplace_back([&](){                           //nowy watek dodawany do wektora shipsThreads
                 shipLife();                                                     //kod wykonywany przez wątek
             });
-            sleep(getRandomNumb(0,2));
+            sleep(getRandomNumb(0,7));
         }
         for (auto& shipThread : shipsThreads) {
             if (shipThread.joinable()) {
@@ -45,12 +44,11 @@ void Seaport::startWorking(){
     });
 
     truckCreator = std::thread([&]() {
-        while (true) {
-            sleep(getRandomNumb(0, 1));                          //ciezarowki
+        while (true) {                                                        //ciezarowki
             trucksThreads.emplace_back([&]() {
                 trucksLife();
             });
-            sleep(getRandomNumb(0,2));
+            sleep(getRandomNumb(0,5));
         }
         for (auto& truckThread : trucksThreads) {
             if (truckThread.joinable()) {
@@ -173,9 +171,9 @@ void Seaport::shipLife(){
 Ship* Seaport::newShipAppears(){
     int shipId = getCurrentShipId();
 
-    int capacityInLitres = getRandomNumb(1,6);
+    int capacityInLitres = getRandomNumb(1,12);
     int loadInLiters = getRandomNumb(0,1) == 0 ? 0 : getRandomNumb(1,capacityInLitres);
-    int maxTimeInPort = getRandomNumb(2, 48);
+    int maxTimeInPort = getRandomNumb(12, 36);
     Ship *newShip = new Ship(shipId, capacityInLitres,loadInLiters, maxTimeInPort);
 
     addVehicleToVehiclesVector(newShip);
@@ -267,7 +265,7 @@ Truck* Seaport::newTruckAppears(){
     int truckId = getCurrentTruckId();
     int capacityInLitres = getRandomNumb(1,6);
     int loadInLiters = getRandomNumb(0,1) == 0 ? 0 : getRandomNumb(1,capacityInLitres);
-    int maxTimeInPort = getRandomNumb(2, 48);
+    int maxTimeInPort = getRandomNumb(6, 48);
     Truck *newTruck = new Truck(truckId, capacityInLitres, loadInLiters, maxTimeInPort);
 
     addVehicleToVehiclesVector(newTruck);
@@ -380,13 +378,13 @@ void Seaport::setNumberOfLoadedShips(int numberOfLoadedShips) {
 
 int Seaport::getCurrentShipId(){
     std::lock_guard<std::mutex> lock(lastShipIdMutex);
-    Seaport::lastShipId = ++lastShipId;
+    Seaport::lastShipId = lastShipId == 999 ? lastShipId = 0 : ++lastShipId;
     return lastShipId;
 }
 
 int Seaport::getCurrentTruckId(){
     std::lock_guard<std::mutex> lock(lastTruckIdMutex);
-    Seaport::lastTruckId = ++lastTruckId;
+    Seaport::lastTruckId =  lastTruckId == 999 ? lastTruckId = 0 :++lastTruckId;
     return lastTruckId;
 }
 

@@ -186,7 +186,8 @@ void NcursesView::newShipAppears(int shipId, int capacityInLitres, int loadInLit
 
     move(firstY + lastShipPosInList, firstX);
     printw("%d", shipId);
-    mvprintw(firstY + lastShipPosInList + 1, firstX, "  ");
+    mvprintw(firstY + lastShipPosInList + 1, firstX, " ");
+    if(shipId <= 99)  mvprintw(firstY + lastTruckPosInList + 2, firstX, " ");
 
     move(firstY + lastShipPosInList, firstX + 6);
     printw(" %d", capacityInLitres);
@@ -249,7 +250,7 @@ void NcursesView::newTruckAppears(int truckId, int capacityInLitres, int loadInL
 
     move(firstY + lastTruckPosInList, firstX);
     printw("%d", truckId);
-    mvprintw(firstY + lastTruckPosInList + 1, firstX, "  ");
+    mvprintw(firstY + lastTruckPosInList + 1, firstX, "   ");
 
     move(firstY + lastTruckPosInList, firstX + 6);
     printw(" %d", capacityInLitres);
@@ -360,7 +361,8 @@ void NcursesView::showShipsQueue(int shipId, int maxTimeInPort, int timeInPort, 
     if(lastShipPosInQueue > 28) return;
 
     move(firstY + lastShipPosInQueue, firstX);
-    printw("%d   ", shipId);
+    printw("%d ", shipId);
+    if(shipId <= 99)  mvprintw(firstY + lastTruckPosInList + 3, firstX, " ");
 
     move(firstY + lastShipPosInQueue, firstX + 6);
     printw(" %d   ", maxTimeInPort);
@@ -385,7 +387,8 @@ void NcursesView::showTruckQueue(int truckId, int maxTimeInPort, int timeInPort,
     if(lastTruckPosInQueue > 28) return;
 
     move(firstY + lastTruckPosInQueue, firstX);
-    printw("%d   ", truckId);
+    printw("%d ", truckId);
+    if(truckId <= 99)  mvprintw(firstY + lastTruckPosInList + 3, firstX, " ");
 
     move(firstY + lastTruckPosInQueue, firstX + 6);
     printw(" %d   ", maxTimeInPort);
@@ -401,7 +404,7 @@ void NcursesView::showTruckQueue(int truckId, int maxTimeInPort, int timeInPort,
 
 void NcursesView::cleanQueue(int firstY, int firstX){
     for(int y = 0 ; y < 30 ; y++){
-        mvprintw(firstY + y, firstX, "    ");
+        mvprintw(firstY + y, firstX, "     :");
         mvprintw(firstY + y, firstX + 6, "    ");
         mvprintw(firstY + y, firstX + 16, "    ");
     }
